@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WishUpdateNotification extends Notification
+class WishSuccessNotification extends Notification
 {
     use Queueable;
 
@@ -42,8 +42,8 @@ class WishUpdateNotification extends Notification
     {
         return [
             'name' => $this->name,
-            'type' => 'update',
-            'message' => 'Data Permohonan Kerjasama Anda berhasil diubah dengan nama',
+            'type' => 'approved',
+            'message' => 'Anda menyetujui data permohonan kerjasama dengan nama',
         ];
     }
 }

@@ -12,8 +12,14 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\WishNotification;
+use App\Notifications\WishToAdminNotification;
 use App\Notifications\WishUpdateNotification;
-use App\Notifications\WishStatusNotification;
+use App\Notifications\WishUpdateToAdminNotification;
+use App\Notifications\WishUpdateToUserNotification;
+use App\Notifications\WishSuccessNotification;
+use App\Notifications\WishSuccessToUserNotification;
+use App\Notifications\WishRejectedNotification;
+use App\Notifications\WishRejectedToUserNotification;
 
 class WishController extends Controller
 {
@@ -41,6 +47,7 @@ class WishController extends Controller
                 return view('401');
             // jika semua data user lengkap
             } else {
+                // data permohonan diambil dari data user yang input, tidak diambil dari semua data
                 $wishes = Wish::where('created_by', $user->id)->get();
                 return view('wishes.index', [
                     'wishes' => $wishes
@@ -111,7 +118,18 @@ class WishController extends Controller
             $wish->updated_by = $user->id;
             $wish->save();
         }
-        Notification::send($user, new WishNotification($request->name));
+        // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
+        if ($user->role_id == 1) {
+            Notification::send($user, new WishNotification($request->name));
+        // selain role admin
+        } else {
+            // $iduser adalah user dengan role admin
+            $iduser = User::where('role_id', '=', '1')->get();
+            // kirim notifikasi ke user
+            Notification::send($user, new WishNotification($request->name));
+            // kirim norifikasi ke admin
+            Notification::send($iduser, new WishToAdminNotification($request->name, $user));
+        }
         
         return redirect()->route('wishes.index')
             ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
@@ -196,7 +214,26 @@ class WishController extends Controller
             $wish->updated_by = $user->id;
             $wish->save();
         }
-        Notification::send($user, new WishUpdateNotification($request->name));
+        // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
+        if (($user->role_id == '1') && ($wish->created_by == '1')) {
+            Notification::send($user, new WishUpdateNotification($request->name));
+        // jika admin menginput data user lain
+        } else if (($user->role_id == '1') && ($wish->created_by > '1')) {
+            // kirim notifikasi ke admin
+            Notification::send($user, new WishUpdateNotification($request->name));
+            // ambil id created_by dari tabel permohonan kerjasama
+            $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
+            // kirim notifikasi ke users 
+            Notification::send($idpengguna, new WishUpdateToUserNotification($request->name));
+        // selain role admin
+        } else {
+            // $iduser adalah user dengan role admin
+            $iduser = User::where('role_id', '=', '1')->get();
+            // kirim notifikasi ke user
+            Notification::send($user, new WishUpdateNotification($request->name));
+            // kirim norifikasi ke admin
+            Notification::send($iduser, new WishUpdateToAdminNotification($request->name, $user));
+        }
 
         return redirect()->route('wishes.index')
                         ->with('success_message','Data Permohonan Kerjasama berhasil diubah!');
@@ -217,32 +254,34 @@ class WishController extends Controller
             ->with('success_message', 'Daftar Permohonan Kerjasama berhasil dihapus!');
     }
 
-    // set status kerjasama menjadi setuju
+    // set status permohonan kerjasama menjadi setuju
     public function wishcometrue($id) {
         $user = Auth::user();
         $wish = Wish::find($id);
-        $created_by = DB::table("wishes")
-                ->leftJoin("users", function($join){
-                    $join->on("wishes.created_by", "=", "users.id");
-                })
-                ->select("wishes.created_by")
-                ->where("wishes.id", "=", $id)
-                ->get();
         $wish->update([
             'status_id' => '3',
         ]);
-        Notification::send($created_by, new WishStatusNotification($wish->name));
+        // ambil id created_by dari tabel permohonan kerjasama
+        $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
+        // kirim notifikasi bahwa data permohonan telah disetujui ke admin dan user
+        Notification::send($user, new WishSuccessNotification($wish->name));
+        Notification::send($idpengguna, new WishSuccessToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil disetujui!');
     }
 
-    // set status kerjasama menjadi needs revision (perlu revisi)
+    // set status permohonan kerjasama menjadi needs revision (perlu revisi)
     public function wishcancelled($id) {
         $user = Auth::user();
         $wish = Wish::find($id);
         $wish->update([
             'status_id' => '2',
         ]);
+        // ambil id created_by dari tabel permohonan kerjasama
+        $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
+        // kirim notifikasi bahwa data permohonan perlu direvisi ke admin dan user
+        Notification::send($user, new WishRejectedNotification($wish->name));
+        Notification::send($idpengguna, new WishRejectedToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil dibatalkan!');
     }

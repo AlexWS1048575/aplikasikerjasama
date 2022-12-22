@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WishStatusNotification extends Notification
+class WishUpdateToAdminNotification extends Notification
 {
     use Queueable;
 
@@ -16,9 +16,10 @@ class WishStatusNotification extends Notification
      *
      * @return void
      */
-    public function __construct($name)
+    public function __construct($name, $user)
     {
         $this->name = $name;
+        $this->user = $user;
     }
 
     /**
@@ -42,6 +43,9 @@ class WishStatusNotification extends Notification
     {
         return [
             'name' => $this->name,
+            'user' => $this->user['name'],
+            'type' => 'updatebyuser',
+            'message' => 'telah mengubah data permohonan dengan nama',
         ];
     }
 }

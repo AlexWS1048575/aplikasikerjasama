@@ -23,19 +23,19 @@ Project Daftar Kerja Sama dengan AdminLTE v3.
 *The authentication views already exists. Want to replace the views? (yes/no) [no]:*
 
 # Saya sudah mengikuti prosedur di bawah ini, tetapi saya tidak bisa melakukan login dan/atau belum memiliki user. Apa yang harus saya lakukan?
-- Klik register dan masukkan Nama, Email, Password (min:8) dan Konfirmasi Password
+- Klik register dan masukkan Nama, Email, Password (min:8) dan Konfirmasi Password.
 
 # Informasi tambahan
 - Setelah mengikuti instalasi seperti yang di atas, user wajib menjalankan perintah di bawah ini
-```php artisan db:seed --class=CorporationTypeSeeder```, ```php artisan db:seed --class=TypeSeeder```, ```php artisan db:seed --class=StatusSeeder```, dan ```php artisan db:seed --class=RoleSeeder```
-- Dengan menjalankan keempat seeder, user dapat menambah data kerja sama sesuai pilihan menu yang sudah ada setelah menjalankan keempat seeder tersebut
+```php artisan db:seed ```
+- Dengan menjalankan code di atas, maka terdapat data dasar yang tertera pada database.
 - Fungsi MainAccountSeeder adalah untuk membuat sample user jika tidak ada data user.
 
 # Saat saya login pertama kali, tampilan grafik masih kosong. Mengapa?
 - Data Kerjasama saat ini kosong, dan user perlu menambahkan data kerjasama tersebut.
 
 # Apa perbedaan antara role admin dan role user?
-- Perbedaannya adalah role admin dapat menambah, edit, dan menghapus semua jenis modul, sedangkan role user dan lainnya, hanya dapat menambahkan data OPD sama data kerja sama, user tidak dapat menambah user, role, mengedit data yang sudah dibuat. User tidak dapat menghapus file tersebut.
+- Perbedaannya adalah role admin dapat menambah, edit, dan menghapus semua jenis modul, sedangkan role user dan lainnya, hanya dapat menambahkan data permohonan kerja sama, user tidak dapat menambah user, role, mengedit data yang sudah dibuat. User tidak dapat menghapus file tersebut.
 
 # Saya adalah user yang login menggunakan role user. Mengapa saat saya membuka halaman edit redirect ke halaman 404?
 - Tujuannya adalah untuk tidak mengganggu data yang dibuat oleh user lainnya.
@@ -47,7 +47,7 @@ Project Daftar Kerja Sama dengan AdminLTE v3.
 - Pastikan file yang Anda upload sesuai dengan requirement yang di atas
 
 # Saya telah mendownload file, tetapi file tersebut kosong. Mengapa>
-- Anda tidak mengupload file, atau file yang Anda upload bersifat corrupted, alias tidak bisa terpakai.
+- Anda tidak mengupload file, atau file yang Anda upload bersifat <i>corrupted</i>, alias tidak bisa terpakai.
 
 # Saya
 

@@ -20,4 +20,9 @@ class Wish extends Model
     {
         return $this->belongsTo(Status::class);
     }
+
+    public function pengguna()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -45,21 +45,29 @@
                                 @endif
                                 <td><a href="{{ url('storage/wishes/'.$wish->filename) }}" target="_blank" download>Download</a></td>
                                 <td>
-                                    @if($wish->status_id < 3)
-                                    <a href="{{route('wishes.wishcometrue', $wish)}}" onclick="return confirm('Apakah anda ingin update status dokumen ini menjadi disetujui?')" class="btn btn-success btn-xs" method="post">
-                                        Set To Approve
-                                    </a>
-                                    @else
-                                    <a href="{{route('wishes.wishcancelled', $wish)}}" onclick="return confirm('Apakah anda ingin membatalkan dokumen ini?')" class="btn btn-warning btn-xs" method="post">
-                                        Cancel
-                                    </a>
+                                    @if($user->role_id == 1)
+                                        @if($wish->status_id < 3)
+                                        <a href="{{route('wishes.wishcometrue', $wish)}}" onclick="return confirm('Apakah anda ingin update status dokumen ini menjadi disetujui?')" class="btn btn-success btn-xs" method="post">
+                                            Set To Approve
+                                        </a>
+                                        @else
+                                        <a href="{{route('wishes.wishcancelled', $wish)}}" onclick="return confirm('Apakah anda ingin membatalkan dokumen ini?')" class="btn btn-warning btn-xs" method="post">
+                                            Cancel
+                                        </a>
+                                        @endif
                                     @endif
                                     <a href="{{route('wishes.show', $wish)}}" class="btn btn-secondary btn-xs">
                                         Show
                                     </a>
+                                    @if($user->role_id == 1)
                                     <a href="{{route('wishes.edit', $wish)}}" class="btn btn-primary btn-xs">
                                         Edit
                                     </a>
+                                    @elseif(($user->role_id > 1) && ($wish->status_id < 3))
+                                    <a href="{{route('wishes.edit', $wish)}}" class="btn btn-primary btn-xs">
+                                        Edit
+                                    </a>
+                                    @endif
                                     <a href="{{route('wishes.destroy', $wish)}}" onclick="notificationBeforeDelete(event, this)" class="btn btn-danger btn-xs">
                                         Delete
                                     </a>

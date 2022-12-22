@@ -105,11 +105,9 @@
                                     <a href="{{route('corporations.edit', $corporation)}}" class="btn btn-primary btn-xs">
                                         Edit
                                     </a>
-                                    @if ($user->role_id == 1)
                                     <a href="{{route('corporations.destroy', $corporation)}}" onclick="notificationBeforeDelete(event, this)" class="btn btn-danger btn-xs">
                                         Delete
                                     </a>
-                                    @endif
                                 </td>
                             </tr>
                         @endforeach

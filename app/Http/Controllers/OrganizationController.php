@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\OrganizationNotification;
+use App\Notifications\OrganizationUpdateNotification;
 
 class OrganizationController extends Controller
 {
@@ -72,7 +75,8 @@ class OrganizationController extends Controller
             'created_by' => $user->id,
             'updated_by' => $user->id,
         ]);
-       
+        // kirim notifikasi bahwa data berhasil diinput
+        Notification::send($user, new OrganizationNotification($request->name));
         return redirect()->route('organizations.index')
             ->with('success_message', 'Data Organisasi berhasil ditambahkan!');
     }
@@ -140,6 +144,8 @@ class OrganizationController extends Controller
         $organization->pic = $request->pic;
         $organization->updated_by = $user->id;
         $organization->save();
+        // kirim notifikasi bahwa data berhasil diupdate
+        Notification::send($user, new OrganizationUpdateNotification($request->name));
         return redirect()->route('organizations.index')
             ->with('success_message', 'Data Organisasi berhasil diubah!');
     }

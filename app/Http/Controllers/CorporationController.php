@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\CorporationNotification;
 use App\Notifications\CorporationUpdateNotification;
+use App\Notifications\CorporationSuccessNotification;
+use App\Notifications\CorporationNeedRevisionNotification;
 use PDF;
 use App\Imports\CorporationImport;
 use App\Exports\CorporationExport;
@@ -127,6 +129,7 @@ class CorporationController extends Controller
                 'updated_by' => $user->id,
             ]);
         }
+        // kirim notifikasi bahwa data berhasil diinput
         Notification::send($user, new CorporationNotification($request->name));
         return redirect()->route('corporations.index')
             ->with('success_message', 'Data Kerjasama berhasil ditambahkan!');
@@ -222,7 +225,7 @@ class CorporationController extends Controller
             $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('attachment')->getClientOriginalExtension();
             $newFilename = $attachment.'_'.'updated'.'_'.date('YmdHis').'.'.$extension;
-            Storage::delete('attachment/'.$corporation->attachment); // hapus berkas lama guna mengurangi sampah pada project
+            Storage::delete('attachment/'.$corporation->attachment); // hapus berkas lama guna mengurangi sampah pada project, dan berkas di folder public/storage juga diganti
             $path = $request->file('attachment')->storeAs('attachment', $newFilename);
             $corporation->attachment = $newFilename;
             $corporation->save();
@@ -243,6 +246,7 @@ class CorporationController extends Controller
             $corporation->updated_by = $user->id;
             $corporation->save();
         }
+        // kirim notifikasi bahwa data berhasil diupdate
         Notification::send($user, new CorporationUpdateNotification($request->name));
         return redirect()->route('corporations.index')
             ->with('success_message', 'Data Kerjasama berhasil diubah!');
@@ -269,7 +273,7 @@ class CorporationController extends Controller
   
         // ambil semua data dari database
         $data = [
-            'title' => 'Data Kerja Sama',
+            'title' => 'Data PDF Kerja Sama',
             'corporations' => $corporations,
         ]; 
         // tanggal download pdf adalah tanggal hari ini
@@ -297,6 +301,7 @@ class CorporationController extends Controller
 
     // impor data dari excel
     public function importexcel(Request $request) {
+        // cek apakah file berupa excel atau tidak, jika tidak atau lebih dari 4 MB akan muncul pesan error
         $validatedData = $request->validate([
             'file' => 'required|mimes:xls,xlsx|max:4096',
          ]);
@@ -306,20 +311,26 @@ class CorporationController extends Controller
 
     // set status kerjasama menjadi setuju
     public function setasapproved($id) {
+        $user = Auth::user();
         $corporation = Corporation::find($id);
         $corporation->update([
             'status_id' => '3',
         ]);
+        // kirim notifikasi bahwa status kerjasama telah disetujui
+        Notification::send($user, new CorporationSuccessNotification($corporation->name));
         return redirect()->route('corporations.index')
             ->with('success_message', 'Status Kerjasama berhasil disetujui!');
     }
 
     // set status kerjasama menjadi needs revision (perlu revisi)
     public function setasrevisions($id) {
+        $user = Auth::user();
         $corporation = Corporation::find($id);
         $corporation->update([
             'status_id' => '2',
         ]);
+        // kirim notifikasi bahwa status kerjasama perlu direvisi
+        Notification::send($user, new CorporationNeedRevisionNotification($corporation->name));
         return redirect()->route('corporations.index')
             ->with('success_message', 'Status Kerjasama berhasil dibatalkan!');
     }
