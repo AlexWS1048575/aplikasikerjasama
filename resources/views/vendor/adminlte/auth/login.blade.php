@@ -5,6 +5,12 @@
     <style>
         .login-page {
   background-image: url('http://simetakerja.pemkomedan.go.id/images/login-bg.jpg');
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
     </style>
 @stop
