@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <style>
         .login-page {
-  background-image: url('https://cdna.artstation.com/p/assets/images/images/005/690/086/large/ashith-mohan-bg-002.jpg?1493047142');
+  background-image: url('http://simetakerja.pemkomedan.go.id/images/login-bg.jpg');
 }
     </style>
 @stop
