@@ -2,6 +2,11 @@
 
 @section('adminlte_css_pre')
     <link rel="stylesheet" href="{{ asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+    <style>
+        .login-page {
+  background-image: url('https://cdna.artstation.com/p/assets/images/images/005/690/086/large/ashith-mohan-bg-002.jpg?1493047142');
+}
+    </style>
 @stop
 
 @php( $login_url = View::getSection('login_url') ?? config('adminlte.login_url', 'login') )
@@ -21,7 +26,6 @@
 @section('auth_header', __('adminlte::adminlte.login_message'))
 
 @section('auth_body')
-<div>oke</div>
     <form action="{{ $login_url }}" method="post">
         @csrf
 
