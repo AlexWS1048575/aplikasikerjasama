@@ -49,10 +49,11 @@
                     <h5><b>Q : Mengapa grafik pada saat data tertentu kosong tidak muncul?</b></h5>
                     <h5>A : Untuk menampilkan grafik pada halaman dashboard, minimal ada 1 data yang terinput.</h5><br>
                     <h5><b>Q : Pada halaman Kerjasama dan Permohonan Kerjasama, disebelah kanan terdapat menu Status. Apakah saya bisa mengubah status tanpa harus masuk ke halaman edit?</b></h5>
-                    <h5>A : Ya. Kamu dapat mengubah status kerjasama dan permohonan kerjasama dengan menekan tombol <i>approve</i> atau <i>cancel</i> yang tertera pada menu tersebut.</h5><br>
+                    <h5>A : Ya. Kamu dapat mengubah status kerjasama dan permohonan kerjasama dengan menekan tombol <i>approve</i> atau <i>cancel</i> yang tertera pada menu tersebut, tetapi hanya berlaku untuk role admin.</h5><br>
                     <h5><b>Q : Mengapa warna notifikasi berbeda-beda dan apa klasifikasi warna tersebut?</b></h5>
                     <h5>A : Tujuan membedakan warna adalah untuk memberikan keterangan ketika user melakukan CRUD atau register. 
-                            Warna hijau adalah registrasi oleh user, warna biru adalah create data, warna kuning adalah update data.</h5><br>
+                            Warna abu-abu adalah registrasi oleh user, warna biru adalah create data, warna kuning adalah update data, warna merah adalah status kerjasama dan permohoan kerjasama perlu direvisi
+                            warna hijau adalah status data kerjasama dan permohonan kerjasama sudah di-acc.</h5><br>
                 </div>
             </div>
         </div>

@@ -43,7 +43,7 @@ class CorporationNeedRevisionNotification extends Notification
         return [
             'name' => $this->name,
             'type' => 'rejected',
-            'message' => 'Data Kerjasama Anda perlu direvisi dengan nama',
+            'message' => 'Anda membatalkan data kerjasama dengan nama',
         ];
     }
 }

@@ -7,6 +7,12 @@
 @stop
 
 @section('content')
+    <style>
+        .scroll {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
     @if($user->role_id == 1)
     <p>Welcome to this beautiful admin panel.</p>
     @else
@@ -88,7 +94,7 @@
                         <div class="card-tools">
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body scroll">
                     @if($user->role_id == 1)
                         @forelse($notifications as $notification)
                             @if (($notification->data['type']) == 'register')

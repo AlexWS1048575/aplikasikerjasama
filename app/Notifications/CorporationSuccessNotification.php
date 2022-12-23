@@ -43,7 +43,7 @@ class CorporationSuccessNotification extends Notification
         return [
             'name' => $this->name,
             'type' => 'approved',
-            'message' => 'Data Kerjasama Anda berhasil disetujui dengan nama',
+            'message' => 'Anda menyetujui data kerjasama dengan nama',
         ];
     }
 }
