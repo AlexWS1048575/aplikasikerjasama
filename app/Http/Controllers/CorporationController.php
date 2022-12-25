@@ -248,6 +248,15 @@ class CorporationController extends Controller
         }
         // kirim notifikasi bahwa data berhasil diupdate
         Notification::send($user, new CorporationUpdateNotification($request->name));
+        // setelah update jika status kerja sama disetujui
+        if ($corporation->status_id == '3') {
+            // kirim notifikasi bahwa status kerjasama telah disetujui
+            Notification::send($user, new CorporationSuccessNotification($corporation->name));
+        // setelah update jika status kerja sama ditolak
+        } else {
+            // kirim notifikasi bahwa status kerjasama perlu direvisi
+            Notification::send($user, new CorporationNeedRevisionNotification($corporation->name));
+        }
         return redirect()->route('corporations.index')
             ->with('success_message', 'Data Kerjasama berhasil diubah!');
     }

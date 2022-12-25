@@ -33,27 +33,31 @@
                     <h5>A : Beberapa menu hanya dikhususkan buat untuk role admin, yang dimana role user tidak dapat melihat, menambah, atau mengedit data yang role nya admin,
                             demi mencegah manipulasi data.</h5><br>
                     <h5><b>Q : Apakah saya bisa mengimport dan mengekspor data ke dalam Excel?</b></h5>
-                    <h5>A : Ya. Anda dapat mengimport dan mengekspor data ke dalam Excel.</h5><br>
+                    <h5>A : Ya. Anda dapat mengimport dan mengekspor data ke dalam Excel. Saat ini hanya role admin yang dapat melakukannya.</h5><br>
                     <h5><b>Q : Saat mengedit data, terdapat menu upload berkas. Apakah saya dapat mengupdate data dengan berkas terbaru atau tanpa berkas?</b></h5>
                     <h5>A : Ya. Anda dapat mengupdate berkas atau mengupdate data tanpa berkas jika tidak ada perubahan data yang mau diupdate.</h5><br>
-                    <h5><b>Q : Saya telah mengimport data, tetapi saya menemukan pesan error "floor(): Argument #1 ($num) must be of type int|float, string given". Mengapa?</b></h5>
+                    <h5><b>Q : Saya telah mengimport data, tetapi saya menemukan pesan error <span class="text-danger">"floor(): Argument #1 ($num) must be of type int|float, string given".</span> Mengapa?</b></h5>
                     <h5>A : Sebelum mengupload, pastikan format data sesuai contoh format saat Anda mengekspor, dan format tanggal adalah mm/dd/YYYY di file Excel yang akan diimport.</h5><br>
                     <h5><b>Q : Saya telah mendownload PDF, tetapi mengapa data saya berbeda pada data aslinya atau hanya sebagian data yang tertera saat buka file PDF?</b></h5>
                     <h5>A : Demi mencegah <i>table overlay</i>, hanya format kolom yang penting saja yang tertampil pada PDF.</h5><br>
                     <h5><b>Q : Saya login sebagai role user, apakah saya dapat mengimport dan mengekspor excel dan mencetak PDF?</b></h5>
                     <h5>A : Tidak. Saat ini user hanya role admin yang dapat mengimport dan mengekspor excel dan mencetak PDF.</h5><br>
-                    <h5><b>Q : Saya login sebagai role admin, melihat notifikasi terlalu banyak. Apakah saya dapat <i>mark all as read</i> semua notifikasi?</b></h5>
-                    <h5>A : Ya. Anda dapat menandai semua notifikasi yang belum terbaca menjadi sudah terbaca.</h5><br>
+                    <h5><b>Q : Saya login sebagai role admin, melihat notifikasi terlalu banyak. Apakah saya dapat <i>mark as read</i> untuk notifikasi tertentu atau <i>mark all as read</i> semua notifikasi?</b></h5>
+                    <h5>A : Ya. Anda dapat menandai satu, sebagian atau semua notifikasi yang belum terbaca menjadi sudah terbaca.</h5><br>
                     <h5><b>Q : Apa fungsi tombol "Show", dan apa perbedaanya?</b></h5>
                     <h5>A : Tombol Show berfungsi untuk melihat rincian salah satu data yang sudah diinput oleh user.</h5><br>
+                    <h5><b>Q : Apakah saya dapat mengupdate status kerjasama dan status permohonan kerjasama?</b></h5>
+                    <h5>A : Ya. Kamu dapat mengupdate status kerjasama dan status permohonan kerjasama dengan klik tombol Approve atau Cancel pada bagian menu Opsi. Role user tidak dapat mengupdate status, hanya dapat melihat status kerjasama tersebut.</h5><br>
                     <h5><b>Q : Mengapa grafik pada saat data tertentu kosong tidak muncul?</b></h5>
                     <h5>A : Untuk menampilkan grafik pada halaman dashboard, minimal ada 1 data yang terinput.</h5><br>
                     <h5><b>Q : Pada halaman Kerjasama dan Permohonan Kerjasama, disebelah kanan terdapat menu Status. Apakah saya bisa mengubah status tanpa harus masuk ke halaman edit?</b></h5>
                     <h5>A : Ya. Kamu dapat mengubah status kerjasama dan permohonan kerjasama dengan menekan tombol <i>approve</i> atau <i>cancel</i> yang tertera pada menu tersebut, tetapi hanya berlaku untuk role admin.</h5><br>
                     <h5><b>Q : Mengapa warna notifikasi berbeda-beda dan apa klasifikasi warna tersebut?</b></h5>
                     <h5>A : Tujuan membedakan warna adalah untuk memberikan keterangan ketika user melakukan CRUD atau register. 
-                            Warna abu-abu adalah registrasi oleh user, warna biru adalah create data, warna kuning adalah update data, warna merah adalah status kerjasama dan permohoan kerjasama perlu direvisi
-                            warna hijau adalah status data kerjasama dan permohonan kerjasama sudah di-acc.</h5><br>
+                            Warna abu-abu adalah registrasi oleh user, warna biru adalah <i>create</i> data, warna kuning adalah <i>update</i> data, warna merah adalah status kerjasama dan permohoan kerjasama perlu direvisi
+                            warna hijau adalah status data kerjasama dan permohonan kerjasama sudah di acc.</h5><br>
+                    <h5><b>Q : Apakah saya dapat melihat <i>value</i> dari grafik tersebut, dan bagaimana cara melihat nya?</b></h5>
+                    <h5>A : Ya. Kamu dapat melihat <i>value</i> dari grafik tersebut, dengan mengarahkan atau klik pada warna grafik tersebut.</h5><br>
                 </div>
             </div>
         </div>

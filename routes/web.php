@@ -91,7 +91,7 @@ Route::get('/faqs', [App\Http\Controllers\FAQController::class, 'index'])->name(
 // user guide
 Route::get('/guides', [App\Http\Controllers\GuideController::class, 'index'])->name('guides.index');
 
-// notifikasi
+// tandai semua notifikasi sudah terbaca
 Route::post('/mark-as-read', [App\Http\Controllers\HomeController::class, 'markNotification'])->name('markNotification');
 
 // set status menjadi disetujui di modul kerjasama

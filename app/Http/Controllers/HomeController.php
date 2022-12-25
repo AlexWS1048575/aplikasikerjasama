@@ -42,11 +42,21 @@ class HomeController extends Controller
         $notifications = Auth::user()->unReadNotifications;
         $pengguna = User::find(1);
         // grafik pie chart bedasarkan tipe kerjasama
-        $corporations = Corporation::select(DB::raw("COUNT(*) as count"), DB::raw("types.name as typename"))
+        $test = DB::table('corporations')->select(DB::raw("COUNT(*) as count"))
+                    ->LeftJoin('types', 'types.id', '=', 'corporations.type_id')
+                    ->groupBy('types.id')
+                    ->orderBy('corporations.id','DESC')
+                    ->pluck('count');
+        $corporations = DB::table('corporations')->select(DB::raw("COUNT(*) as count"), DB::raw("types.name as typename"))
                     ->LeftJoin('types', 'types.id', '=', 'corporations.type_id')
                     ->groupBy('types.name')
                     ->orderBy('corporations.id','DESC')
                     ->pluck('count', 'typename');
+        // $corporations = DB::statement("SELECT b.name AS typename, count(a.id) AS count, 
+        //                 (SELECT count(a.id) AS total FROM corporations a) AS totaldata, 
+        //                 (count(a.id) / (SELECT count(a.id) AS total FROM corporations a)) AS persentase 
+        //                 FROM corporations a LEFT JOIN types b ON b.id = a.type_id GROUP BY b.name")
+        //                 ->pluck('typename', 'count', 'totaldata', 'persentase');
         // grafik pie chart bedasarkan jenis kerjasama
         $corporations2 = Corporation::select(DB::raw("COUNT(*) as count"), DB::raw("corporation_types.name as corporationtypename"))
                     ->LeftJoin('corporation_types', 'corporation_types.id', '=', 'corporations.corporationtype_id')
@@ -122,6 +132,13 @@ class HomeController extends Controller
             ->markAsRead();
 
         return response()->noContent();
+        // $user = User::find($auth->id);
+
+        // foreach ($user->unreadNotifications as $notification) {
+        //     $notification->markAsRead();
+        // }
+        // return redirect()->back();
+
     }
 
     public function updateProfile(Request $request)
