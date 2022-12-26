@@ -28,8 +28,10 @@ Project Daftar Kerja Sama dengan AdminLTE v3.
 # Informasi tambahan
 - Setelah mengikuti instalasi seperti yang di atas, user wajib menjalankan perintah di bawah ini
 ```php artisan db:seed ```
-- Dengan menjalankan code di atas, maka terdapat data dasar yang tertera pada database.
+- Dengan menjalankan code di atas, maka terdapat sample data yang tertera pada database.
 - Fungsi MainAccountSeeder adalah untuk membuat sample user jika tidak ada data user.
+
+# Pertanyaan Yang Sering Diajukan
 
 # Saat saya login pertama kali, tampilan grafik masih kosong. Mengapa?
 - Data Kerjasama saat ini kosong, dan user perlu menambahkan data kerjasama tersebut.
@@ -37,19 +39,29 @@ Project Daftar Kerja Sama dengan AdminLTE v3.
 # Apa perbedaan antara role admin dan role user?
 - Perbedaannya adalah role admin dapat menambah, edit, dan menghapus semua jenis modul, sedangkan role user dan lainnya, hanya dapat menambahkan data permohonan kerja sama, user tidak dapat menambah user, role, mengedit data yang sudah dibuat. User tidak dapat menghapus file tersebut.
 
-# Saya adalah user yang login menggunakan role user. Mengapa saat saya membuka halaman edit redirect ke halaman 404?
+# Saya adalah user yang login menggunakan role user. Mengapa sebagian menu <i>redirect</i> ke halaman 404?
 - Tujuannya adalah untuk tidak mengganggu data yang dibuat oleh user lainnya.
 
 # Apakah saya dapat menambahkan role selain admin dan user?
-- Ya. Admin dapat menambahkan role lainnya sesuai keinginan admin
+- Ya. Anda dapat menambahkan role lainnya sesuai keinginan anda.
 
 # Saya telah mengupload berkas atau gambar tertentu, tetapi mengapa tidak muncul di halaman index?
-- Pastikan file yang Anda upload sesuai dengan requirement yang di atas
+- Pastikan file yang Anda upload sesuai dengan requirement yang di atas.
 
-# Saya telah mendownload file, tetapi file tersebut kosong. Mengapa>
-- Anda tidak mengupload file, atau file yang Anda upload bersifat <i>corrupted</i>, alias tidak bisa terpakai.
+# Saya sudah login sebagai user, ketika saya akses ke halaman permohonan kerjasama, otomatis redirect ke halaman 401. Apa yang harus saya lakukan?
+- Anda perlu mengisi semua biodata pada menu ```/change-profile```. Jika setelah disimpan ada satu data yang kosong, maka Anda tidak dapat mengakses ke menu tersebut.
 
-# Saya
+# Saya telah mendownload file, tetapi file tersebut kosong. Mengapa?
+- Anda tidak mengupload file, atau file yang Anda upload bersifat <i>corrupted</i>, alias tidak bisa terpakai, atau Anda lupa menjalankan ```php artisan storage:link``` untuk menyimpan berkas yang Anda upload.
+
+# Ketika saya mencoba download file di user guide, file nya kosong. Mengapa?
+- Disarankan Anda menjalankan ```php artisan storage:link```, sehingga dapat menampung file yang telah diupload oleh user tersebut.
+
+# Apakah saya dapat mengganti logo AdminLTE?
+- Ya. Kamu dapat mengganti logo tersebut. Saat ini hanya melalui backend untuk mengganti logo. 
+
+# Saya telah mengganti icon adminlte menjadi logo lain, tetapi logo tersebut masih logo lama. Apa yang harus saya lakukan?
+- Pastikan untuk membersihkan semua konfigurasi dengan menjalankan ```php artisan config:cache```, ```php artisan config:clear```, untuk mereset konfigurasi tersebut.
 
 # Referensi
 [1](https://www.cafeteria.id/2022/02/cara-integrasi-laravel-9-dengan-laravel.html)
