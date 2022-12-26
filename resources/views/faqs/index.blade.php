@@ -58,6 +58,8 @@
                             warna hijau adalah status data kerjasama dan permohonan kerjasama sudah di acc.</h5><br>
                     <h5><b>Q : Apakah saya dapat melihat <i>value</i> dari grafik tersebut, dan bagaimana cara melihat nya?</b></h5>
                     <h5>A : Ya. Kamu dapat melihat <i>value</i> dari grafik tersebut, dengan mengarahkan atau klik pada warna grafik tersebut.</h5><br>
+                    <h5><b>Q : Apakah saya dapat membuat user dengan 1 email tapi lebih banyak akun?</b></h5>
+                    <h5>A : Tidak bisa. Satu email hanya untuk satu akun saja.</h5><br>
                 </div>
             </div>
         </div>

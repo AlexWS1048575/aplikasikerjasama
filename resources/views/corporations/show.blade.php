@@ -42,7 +42,7 @@
                                 {{ \Carbon\Carbon::parse($corporation->assignment_date)->format('d/m/Y') }}
                             </div>
                             <div class="form-group">
-                                <strong>Jangka Waktu Pelaksanaan : </strong>
+                                <strong>Durasi : </strong>
                                 @if(($corporation->durationtype_id == 1) && ($corporation->duration > 12))
                                 {{ $corporation->duration }} {{ $corporation->durationtype->name }} ({{ floor($corporation->duration / 12) }} Tahun {{ $corporation->duration % 12 }} Bulan)
                                 @elseif($corporation->durationtype_id == 1)

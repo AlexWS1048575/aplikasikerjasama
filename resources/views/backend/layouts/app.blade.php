@@ -3,7 +3,11 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1>Dashboard 2</h1>
+    @if($user->role_id == 1)
+    <h1>Dashboard Admin</h1>
+    @else
+    <h1>Dashboard User</h1>
+    @endif
 @stop
 
 @section('content')
@@ -14,9 +18,9 @@
         }
     </style>
     @if($user->role_id == 1)
-    <p>Welcome to this beautiful admin panel.</p>
+    <p>Welcome back, {{$user->name }}</p>
     @else
-    <p>Welcome to this beautiful user panel.</p>
+    <p>Welcome back, {{$user->name }}</p>
     @endif
     @if(session('status'))
         <div class="alert alert-success" role="alert">

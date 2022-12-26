@@ -31,7 +31,7 @@
                             <th class="align-middle">Ringkasan</th>
                             <th class="align-middle">PIC</th>
                             <th class="align-middle">Tanggal Penetapan</th>
-                            <th class="align-middle">Jangka Waktu Pelaksanaan</th>
+                            <th class="align-middle">Durasi</th>
                             <th class="align-middle">Tanggal Kadaluarsa</th>
                             <th class="align-middle">Tipe Kerjasama</th>
                             <th class="align-middle">Jenis Kerjasama</th>

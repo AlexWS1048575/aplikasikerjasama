@@ -15,7 +15,7 @@
                 <th>Judul</th>
                 <th>Nomor Dokumen</th>
                 <th>Tanggal Penetapan</th>
-                <th>Jangka Waktu Pelaksanaan</th>
+                <th>Durasi</th>
                 <th>Tanggal Akhir Masa Aktif</th>
                 <th>Tipe Kerjasama</th>
                 <th>Jenis Kerjasama</th>

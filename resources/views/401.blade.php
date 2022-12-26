@@ -35,7 +35,7 @@
           <div class="row">
             <div class="col-lg-8 col-12 col-sm-10 offset-lg-2 offset-sm-1">
               <h1 class="m-0">401</h1>
-              <h6>It looks like you haven't fill all your biodata. Please fill it first in order to access this menu. Click this <a href="{{route('change-profile')}}">link</a> to complete your data.</h6>
+              <h6>It looks like you haven't fill all your profile. Please fill it first in order to access this menu. Click this <a href="{{route('change-profile')}}">link</a> to complete your data.</h6>
               <a href="{{route('home')}}"><h2>Back to menu</h2></a>
             </div>
           </div>
