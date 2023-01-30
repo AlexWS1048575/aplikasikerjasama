@@ -29,7 +29,7 @@ Project Daftar Kerja Sama dengan AdminLTE v3.
 - Setelah mengikuti instalasi seperti yang di atas, user wajib menjalankan perintah di bawah ini
 ```php artisan db:seed ```
 - Dengan menjalankan code di atas, maka terdapat sample data yang tertera pada database.
-- Fungsi MainAccountSeeder adalah untuk membuat sample user jika tidak ada data user.
+- Fungsi ```MainAccountSeeder``` adalah untuk membuat sample user jika tidak ada data user.
 
 # Pertanyaan Yang Sering Diajukan
 
@@ -57,11 +57,14 @@ Project Daftar Kerja Sama dengan AdminLTE v3.
 # Ketika saya mencoba download file di user guide, file nya kosong. Mengapa?
 - Disarankan Anda menjalankan ```php artisan storage:link```, sehingga dapat menampung file yang telah diupload oleh user tersebut.
 
+# Saya telah mengupload file, setelah saya melakukan ```php artisan storage:link```, file saya tidak tersimpan dalam folder public. Mengapa?
+- Pada beberapa source code yang menggunakan gambar, ubah ```$path = $request->file('filename')->storeAs('namafolder', $newFilename);``` menjadi ```$path = $request->file('filename')->storeAs('public/namafolder', $newFilename);```, sehingga file tersebut tersimpan pada folder public.
+
 # Apakah saya dapat mengganti logo AdminLTE?
 - Ya. Kamu dapat mengganti logo tersebut. Saat ini hanya melalui backend untuk mengganti logo. 
 
 # Saya telah mengganti icon adminlte menjadi logo lain, tetapi logo tersebut masih logo lama. Apa yang harus saya lakukan?
-- Pastikan untuk membersihkan semua konfigurasi dengan menjalankan ```php artisan config:cache```, ```php artisan config:clear```, untuk mereset konfigurasi tersebut.
+- Pastikan untuk membersihkan semua konfigurasi dengan menjalankan ```php artisan config:cache```, ```php artisan config:clear```, dan ```php artisan config:clear``` untuk mereset konfigurasi tersebut.
 
 # Referensi
 [1](https://www.cafeteria.id/2022/02/cara-integrasi-laravel-9-dengan-laravel.html)
