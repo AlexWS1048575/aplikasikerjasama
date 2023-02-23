@@ -76,64 +76,6 @@ class WishController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(Request $request)
-    // {
-    //     $user = Auth::user();
-    //     $validateData = $request->validate([
-    //         'name' => 'required',
-    //         'detail' => 'required',
-    //         'organization' => 'required',
-    //         'requester_id' => 'required',
-    //         'filename' => 'file|mimes:pdf|max:4096',
-    //     ]);
-
-    //     // jika punya berkas
-    //     if ($request->hasFile('filename')) {
-    //         $wish = new Wish();
-    //         $wish->name = $validateData['name'];
-    //         $wish->detail = $validateData['detail'];
-    //         $wish->phone = $request->phone;
-    //         $wish->pic = $request->pic;
-    //         $wish->organization = $validateData['organization'];
-    //         $wish->requester_id = $validateData['requester_id'];
-    //         $wish->created_by = $user->id;
-    //         $wish->updated_by = $user->id;
-    //         $filenameWithExt = $request->file('filename')->getClientOriginalName();
-    //         $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-    //         $extension = $request->file('filename')->getClientOriginalExtension();
-    //         $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-    //         $path = $request->file('filename')->storeAs('wishes', $newFilename);
-    //         $wish->filename = $newFilename;
-    //         $wish->save();
-    //         // jika tidak punya berkas
-    //     } else {
-    //         $wish = new Wish();
-    //         $wish->name = $validateData['name'];
-    //         $wish->detail = $validateData['detail'];
-    //         $wish->phone = $request->phone;
-    //         $wish->pic = $request->pic;
-    //         $wish->organization = $validateData['organization'];
-    //         $wish->requester_id = $validateData['requester_id'];
-    //         $wish->created_by = $user->id;
-    //         $wish->updated_by = $user->id;
-    //         $wish->save();
-    //     }
-    //     // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
-    //     if ($user->role_id == 1) {
-    //         Notification::send($user, new WishNotification($request->name));
-    //         // selain role admin
-    //     } else {
-    //         // $iduser adalah user dengan role admin
-    //         $iduser = User::where('role_id', '=', '1')->get();
-    //         // kirim notifikasi ke user
-    //         Notification::send($user, new WishNotification($request->name));
-    //         // kirim norifikasi ke admin
-    //         Notification::send($iduser, new WishToAdminNotification($request->name, $user));
-    //     }
-
-    //     return redirect()->route('wishes.index')
-    //         ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
-    // }
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -160,9 +102,10 @@ class WishController extends Controller
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('filename')->getClientOriginalExtension();
             $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-            $path = $request->file('filename')->storeAs('wishes', $newFilename, 'public');
+            $path = $request->file('filename')->storeAs('wishes', $newFilename);
             $wish->filename = $newFilename;
             $wish->save();
+            // jika tidak punya berkas
         } else {
             $wish = new Wish();
             $wish->name = $validateData['name'];
@@ -175,10 +118,10 @@ class WishController extends Controller
             $wish->updated_by = $user->id;
             $wish->save();
         }
-
         // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
         if ($user->role_id == 1) {
             Notification::send($user, new WishNotification($request->name));
+            // selain role admin
         } else {
             // $iduser adalah user dengan role admin
             $iduser = User::where('role_id', '=', '1')->get();
@@ -191,6 +134,63 @@ class WishController extends Controller
         return redirect()->route('wishes.index')
             ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
     }
+    // public function store(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $validateData = $request->validate([
+    //         'name' => 'required',
+    //         'detail' => 'required',
+    //         'organization' => 'required',
+    //         'requester_id' => 'required',
+    //         'filename' => 'file|mimes:pdf|max:4096',
+    //     ]);
+
+    //     // jika punya berkas
+    //     if ($request->hasFile('filename')) {
+    //         $wish = new Wish();
+    //         $wish->name = $validateData['name'];
+    //         $wish->detail = $validateData['detail'];
+    //         $wish->phone = $request->phone;
+    //         $wish->pic = $request->pic;
+    //         $wish->organization = $validateData['organization'];
+    //         $wish->requester_id = $validateData['requester_id'];
+    //         $wish->created_by = $user->id;
+    //         $wish->updated_by = $user->id;
+    //         $filenameWithExt = $request->file('filename')->getClientOriginalName();
+    //         $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+    //         $extension = $request->file('filename')->getClientOriginalExtension();
+    //         $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
+    //         $path = $request->file('filename')->storeAs('wishes', $newFilename, 'public');
+    //         $wish->filename = $newFilename;
+    //         $wish->save();
+    //     } else {
+    //         $wish = new Wish();
+    //         $wish->name = $validateData['name'];
+    //         $wish->detail = $validateData['detail'];
+    //         $wish->phone = $request->phone;
+    //         $wish->pic = $request->pic;
+    //         $wish->organization = $validateData['organization'];
+    //         $wish->requester_id = $validateData['requester_id'];
+    //         $wish->created_by = $user->id;
+    //         $wish->updated_by = $user->id;
+    //         $wish->save();
+    //     }
+
+    //     // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
+    //     if ($user->role_id == 1) {
+    //         Notification::send($user, new WishNotification($request->name));
+    //     } else {
+    //         // $iduser adalah user dengan role admin
+    //         $iduser = User::where('role_id', '=', '1')->get();
+    //         // kirim notifikasi ke user
+    //         Notification::send($user, new WishNotification($request->name));
+    //         // kirim norifikasi ke admin
+    //         Notification::send($iduser, new WishToAdminNotification($request->name, $user));
+    //     }
+
+    //     return redirect()->route('wishes.index')
+    //         ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
+    // }
 
 
     /**
