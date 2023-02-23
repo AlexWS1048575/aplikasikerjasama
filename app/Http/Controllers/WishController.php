@@ -103,7 +103,7 @@ class WishController extends Controller
             $extension = $request->file('filename')->getClientOriginalExtension();
             $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
             // $path = $request->file('filename')->storeAs('wishes', $newFilename);
-            $path = $request->file('filename')->storeAs('wishes-pdf', $newFilename, 'public');
+            $path = $request->file('filename')->storeAs('public/wishes-pdf', $newFilename);
             $wish->filename = $newFilename;
             $wish->save();
             // jika tidak punya berkas
