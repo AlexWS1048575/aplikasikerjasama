@@ -43,7 +43,7 @@
                                 @else
                                 <td class="text-success"><strong>{{ $wish->status->name }}</strong></td>
                                 @endif
-                                <td><a href="{{ url('public/storage/wishes/'.$wish->filename) }}" target="_blank" download>Download</a></td>
+                                <td><a href="{{ url('storage/wishes/'.$wish->filename) }}" target="_blank" download>Download</a></td>
                                 <td>
                                     @if($user->role_id == 1)
                                         @if($wish->status_id < 3)
