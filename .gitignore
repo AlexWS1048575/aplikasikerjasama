@@ -16,6 +16,7 @@ yarn-error.log
 /.idea
 /.vscode
 .DS_store
+/storage/app/backup/*
 /storage/app/public/backup/*
 /storage/app/public/filename/*
 /storage/app/public/attachment/*
