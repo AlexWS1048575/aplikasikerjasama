@@ -70,9 +70,9 @@
                             <div class="form-group">
                                 <strong>Status Kerjasama : </strong>
                                 @if($corporation->status_id == 1)
-                                <span class="text-primary"><strong>{{ $corporation->status->name }}</strong></span>
-                                @elseif($corporation->status_id == 2)
                                 <span class="text-warning"><strong>{{ $corporation->status->name }}</strong></span>
+                                @elseif($corporation->status_id == 2)
+                                <span class="text-primary"><strong>{{ $corporation->status->name }}</strong></span>
                                 @else
                                 <span class="text-success"><strong>{{ $corporation->status->name }}</strong></span>
                                 @endif

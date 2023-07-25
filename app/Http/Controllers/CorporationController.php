@@ -10,15 +10,21 @@ use App\Models\CorporationType;
 use App\Models\DurationType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\CorporationNotification;
 use App\Notifications\CorporationUpdateNotification;
+use App\Notifications\CorporationPendingNotification;
+use App\Notifications\CorporationInProgressNotification;
 use App\Notifications\CorporationSuccessNotification;
-use App\Notifications\CorporationNeedRevisionNotification;
 use PDF;
 use App\Imports\CorporationImport;
 use App\Exports\CorporationExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class CorporationController extends Controller
 {
@@ -27,21 +33,29 @@ class CorporationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    function __construct()
     {
-        // $corporations = Corporation::all();
+        $this->middleware('permission:corporation-read|corporation-create|corporation-update|corporation-delete', ['only' => ['index','store', 'show']]);
+        $this->middleware('permission:corporation-create', ['only' => ['create','store']]);
+        $this->middleware('permission:corporation-update', ['only' => ['edit','update']]);
+        $this->middleware('permission:corporation-delete', ['only' => ['destroy']]);
+    }
+    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(): View
+    {
         $user = Auth::user();
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            $corporations = Corporation::all();
-            return view('corporations.index', [
-                'corporations' => $corporations
-            ])->with([
-                'user' => $user,
-            ]);
-        // selain role admin
+        $roles = Role::all();
+        if($user->hasRole('Admin')) {
+        $corporations = Corporation::all();
+        return view('corporations.index', ['corporations' => $corporations])->with(['user' => $user]);
         } else {
-            return view('404');
+            $corporations = Corporation::where('created_by', $user->id)->get();
+            return view('corporations.index', ['corporations' => $corporations])->with(['user' => $user]);
         }
     }
 
@@ -50,21 +64,15 @@ class CorporationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
+        $user = Auth::user();
         $statuses = Status::all();
         $types = Type::all();
         $corporationtypes = CorporationType::all();
         $durationtypes = DurationType::all();
         $corporations = Corporation::all();
-        $user = Auth::user();
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            return view('corporations.create', compact('statuses', 'types', 'corporationtypes', 'durationtypes'))->with(['user' => $user]);
-        // selain role admin
-        } else {
-            return view('404');
-        }
+        return view('corporations.create', compact('statuses', 'types', 'corporationtypes', 'durationtypes'))->with(['user' => $user]);
     }
 
     /**
@@ -73,7 +81,7 @@ class CorporationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $request->validate([
@@ -90,11 +98,21 @@ class CorporationController extends Controller
         ]);
         // jika ada file
         if ($request->hasFile('attachment')) {
+
+            // simpan di folder storage
             $filenameWithExt = $request->file('attachment')->getClientOriginalName();
             $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('attachment')->getClientOriginalExtension();
             $newFilename = $attachment.'_'.date('YmdHis').'.'.$extension;
             $path = $request->file('attachment')->storeAs('attachment', $newFilename);
+
+            // simpan di folder public
+            /* $filenameWithExt = $request->file('attachment')->getClientOriginalName();
+            $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('attachment')->getClientOriginalExtension();
+            $newFilename = $attachment.'_'.date('YmdHis').'.'.$extension;
+            $path = $request->file('attachment')->move('attachment', $newFilename); */
+
             Corporation::create([
                 'name' => $request->name,
                 'title' => $request->title,
@@ -141,21 +159,15 @@ class CorporationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id): View
     {
+        $corporation = Corporation::find($id);
+        $durationtypes = DurationType::all();
         $statuses = Status::all();
         $types = Type::all();
         $corporationtypes = CorporationType::all();
-        $durationtypes = DurationType::all();
-        $corporation = Corporation::find($id);
         $user = Auth::user();
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            return view('corporations.show', ['corporation' => $corporation], compact('statuses', 'types', 'corporationtypes', 'durationtypes'))->with(['user' => $user]);
-        // selain role admin
-        } else {
-            return view('404');
-        }
+        return view('corporations.show', ['corporation' => $corporation], compact('statuses', 'types', 'corporationtypes', 'durationtypes'))->with(['user' => $user]);
     }
 
     /**
@@ -164,21 +176,16 @@ class CorporationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id): View
     {
+        $corporation = Corporation::find($id);
+        $corporationtypes = CorporationType::all();
         $statuses = Status::all();
         $types = Type::all();
-        $corporationtypes = CorporationType::all();
         $durationtypes = DurationType::all();
-        $corporation = Corporation::find($id);
         $user = Auth::user();
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            return view('corporations.edit', ['corporation' => $corporation], compact('statuses', 'types', 'corporationtypes', 'durationtypes'))->with(['user' => $user]);
-        // selain role admin
-        } else {
-            return view('404');
-        }
+        return view('corporations.edit', ['corporation' => $corporation], compact('statuses', 'types', 'corporationtypes', 'durationtypes'))->with(['user' => $user]);
+
     }
 
     /**
@@ -188,7 +195,7 @@ class CorporationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $user = Auth::user();
         $request->validate([
@@ -204,8 +211,8 @@ class CorporationController extends Controller
             'durationtype_id' => 'required',
             'attachment' => 'file|mimes:pdf|max:4096',
         ]);
-
         $corporation = Corporation::find($id);
+
         // jika ada berkas yang mau diganti
         if ($request->hasFile('attachment')) {
             $corporation->name = $request->name;
@@ -221,13 +228,25 @@ class CorporationController extends Controller
             $corporation->corporationtype_id = $request->corporationtype_id;
             $corporation->durationtype_id = $request->durationtype_id;
             $corporation->updated_by = $user->id;
+
+            // simpan di folder storage
+            /* $filenameWithExt = $request->file('attachment')->getClientOriginalName();
+            $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('attachment')->getClientOriginalExtension();
+            $newFilename = $attachment . '_' . 'updated' . '_' . date('YmdHis') . '.' . $extension;
+            Storage::delete('attachment/' . $corporation->attachment);
+            $path = $request->file('attachment')->storeAs('attachment', $newFilename);
+            $corporation->attachment = $newFilename; */
+
+            // simpan di folder public
             $filenameWithExt = $request->file('attachment')->getClientOriginalName();
             $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('attachment')->getClientOriginalExtension();
-            $newFilename = $attachment.'_'.'updated'.'_'.date('YmdHis').'.'.$extension;
-            Storage::delete('attachment/'.$corporation->attachment); // hapus berkas lama guna mengurangi sampah pada project, dan berkas di folder public/storage juga diganti
-            $path = $request->file('attachment')->storeAs('attachment', $newFilename);
+            $newFilename = $attachment . '_' . 'updated' . '_' . date('YmdHis') . '.' . $extension;
+            File::delete('attachment/' . $corporation->attachment);
+            $path = $request->file('attachment')->move('attachment', $newFilename);
             $corporation->attachment = $newFilename;
+
             $corporation->save();
         // jika tidak ada berkas
         } else {
@@ -246,7 +265,6 @@ class CorporationController extends Controller
             $corporation->updated_by = $user->id;
             $corporation->save();
         }
-        // kirim notifikasi bahwa data berhasil diupdate
         Notification::send($user, new CorporationUpdateNotification($request->name));
         return redirect()->route('corporations.index')
             ->with('success_message', 'Data Kerjasama berhasil diubah!');
@@ -258,17 +276,20 @@ class CorporationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy($id): RedirectResponse
     {
         $corporation = Corporation::find($id);
-        Storage::delete('attachment/'. $corporation->attachment); // hapus berkas yang diupload guna mengurangi sampah pada project
+        // hapus berkas di folder public atau storage, guna mengurangi sampah pada server
+        // Storage::delete('attachment/'. $corporation->attachment);
+        File::delete('attachment/'. $corporation->attachment);
         if ($corporation) $corporation->delete();
         return redirect()->route('corporations.index')
             ->with('success_message', 'Data Kerjasama berhasil dihapus!');
     }
 
     // cetak pdf
-    public function downloadpdf() {
+    public function downloadpdf() 
+    {
         $corporations = Corporation::get();
   
         // ambil semua data dari database
@@ -287,7 +308,8 @@ class CorporationController extends Controller
     }
 
     // ekspor ke excel
-    public function exportexcel() {
+    public function exportexcel()
+    {
         // tanggal ekspor diambil dari tanggal hari ini
         $date = date('YmdHis');
         // ekspor ke excel
@@ -295,12 +317,14 @@ class CorporationController extends Controller
     }
 
     // lihat halaman import
-    public function viewimport() {
+    public function viewimport()
+    {
         return view('corporations.import');
     }
 
     // impor data dari excel
-    public function importexcel(Request $request) {
+    public function importexcel(Request $request)
+    {
         // cek apakah file berupa excel atau tidak, jika tidak atau lebih dari 4 MB akan muncul pesan error
         $validatedData = $request->validate([
             'file' => 'required|mimes:xls,xlsx|max:4096',
@@ -310,7 +334,8 @@ class CorporationController extends Controller
     }
 
     // set status kerjasama menjadi setuju
-    public function setasapproved($id) {
+    public function approve($id)
+    {
         $user = Auth::user();
         $corporation = Corporation::find($id);
         $corporation->update([
@@ -319,19 +344,34 @@ class CorporationController extends Controller
         // kirim notifikasi bahwa status kerjasama telah disetujui
         Notification::send($user, new CorporationSuccessNotification($corporation->name));
         return redirect()->route('corporations.index')
-            ->with('success_message', 'Status Kerjasama berhasil disetujui!');
+            ->with('success_message', 'Status Kerjasama telah disetujui!');
     }
 
-    // set status kerjasama menjadi needs revision (perlu revisi)
-    public function setasrevisions($id) {
+    // set status kerjasama menjadi pending
+    public function cancel($id)
+    {
+        $user = Auth::user();
+        $corporation = Corporation::find($id);
+        $corporation->update([
+            'status_id' => '1',
+        ]);
+        // kirim notifikasi bahwa status kerjasama perlu direvisi
+        Notification::send($user, new CorporationPendingNotification($corporation->name));
+        return redirect()->route('corporations.index')
+            ->with('success_message', 'Status Kerjasama telah dibatalkan!');
+    }
+
+    // set status kerjasama menjadi sedang dalam proses
+    public function nextstep($id)
+    {
         $user = Auth::user();
         $corporation = Corporation::find($id);
         $corporation->update([
             'status_id' => '2',
         ]);
         // kirim notifikasi bahwa status kerjasama perlu direvisi
-        Notification::send($user, new CorporationNeedRevisionNotification($corporation->name));
+        Notification::send($user, new CorporationInProgressNotification($corporation->name));
         return redirect()->route('corporations.index')
-            ->with('success_message', 'Status Kerjasama berhasil dibatalkan!');
+            ->with('success_message', 'Status Kerjasama telah diupdate!');
     }
 }

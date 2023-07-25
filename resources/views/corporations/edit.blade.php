@@ -75,7 +75,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        @if($user->role_id == 1)
                         <div class="form-group">
                             <label for="exampleInputStatus">Status</label>
                             <select class="form-control" name="status_id">
@@ -84,11 +83,14 @@
                                 @endforeach
                             </select>
                         </div>
-                        @endif
                         <div class="form-group">
                             <label for="exampleInputAttachment">Lampiran Kerjasama (PDF)</label>
                             <input type="file" class="form-control @error('attachment') is-invalid @enderror" id="exampleInputAttachment" placeholder="Gambar" name="attachment" value="{{$corporation->attachment ?? old('attachment')}}">
+                            @if(!$corporation->attachment)
+                            Tidak ada Berkas Lama
+                            @else
                             <br>Berkas Lama <a href="{{ url('/storage/attachment/'.$corporation->attachment) }}" target="_blank" download>Download</a>
+                            @endif
                             @error('attachment') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                     </div>

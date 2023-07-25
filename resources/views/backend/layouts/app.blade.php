@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    @if($user->role_id == 1)
+    @if($user->name == 'Admin')
     <h1>Dashboard Admin</h1>
     @else
     <h1>Dashboard User</h1>
@@ -17,7 +17,7 @@
             overflow-y: auto;
         }
     </style>
-    @if($user->role_id == 1)
+    @if($user->name == 'Admin')
     <p>Welcome back, {{$user->name }}</p>
     @else
     <p>Welcome back, {{$user->name }}</p>
@@ -99,7 +99,7 @@
                         </div>
                     </div>
                     <div class="card-body scroll">
-                    @if($user->role_id == 1)
+                    @if($user->name == 'Admin')
                         @forelse($notifications as $notification)
                             @if (($notification->data['type']) == 'register')
                                 <div class="alert alert-secondary" role="alert">
@@ -136,15 +136,22 @@
                                         Mark as read
                                     </a>
                                 </div>
-                            @elseif (($notification->data['type']) == 'approved')
-                                <div class="alert alert-success" role="alert">
+                            @elseif (($notification->data['type']) == 'rejected')
+                                <div class="alert alert-danger" role="alert">
                                     [{{ $notification->created_at }}] {{ $notification->data['message'] }} ({{ $notification->data['name'] }}).
                                     <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
                                         Mark as read
                                     </a>
                                 </div>
-                            @elseif (($notification->data['type']) == 'rejected')
-                                <div class="alert alert-danger" role="alert">
+                            @elseif (($notification->data['type']) == 'inprogress')
+                                <div class="alert alert-info" role="alert">
+                                    [{{ $notification->created_at }}] {{ $notification->data['message'] }} ({{ $notification->data['name'] }}).
+                                    <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
+                                        Mark as read
+                                    </a>
+                                </div>
+                            @elseif (($notification->data['type']) == 'approved')
+                                <div class="alert alert-success" role="alert">
                                     [{{ $notification->created_at }}] {{ $notification->data['message'] }} ({{ $notification->data['name'] }}).
                                     <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
                                         Mark as read
@@ -281,6 +288,7 @@
             let request = sendMarkRequest();
             request.done(() => {
                 $('div.alert').remove();
+                location.reload();
             })
         });
     });

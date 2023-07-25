@@ -8,7 +8,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
   
-class MainAccountSeeder extends Seeder
+class SecondAccountSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,15 +16,16 @@ class MainAccountSeeder extends Seeder
     public function run(): void
     {
         $user = User::create([
-            'name' => 'Admin', 
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('admin12345'),
-            'phone' => '081234567890',
+            'name' => 'User', 
+            'email' => 'user@gmail.com',
+            'password' => bcrypt('user67890'),
+            'phone' => '089876543210',
         ]);
         
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::create(['name' => 'User']);
          
-        $permissions = Permission::pluck('id','id')->all();
+        // $permissions = Permission::pluck('id','id')->all();
+        $permissions = Permission::whereBetween('id', ['13', '16'])->pluck('id', 'id');
        
         $role->syncPermissions($permissions);
          

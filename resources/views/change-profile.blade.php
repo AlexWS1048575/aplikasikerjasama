@@ -17,7 +17,7 @@
                         </div>
                         <div class="form-group">
                             <label for="exampleInputEmail">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail" placeholder="test@example.com" name="email" value="{{$user->email ?? old('email')}}">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail" placeholder="test@example.com" name="email" value="{{$user->email ?? old('email')}}" readonly>
                             @error('email') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
@@ -25,14 +25,6 @@
                             <input type="number" class="form-control @error('phone') is-invalid @enderror" id="exampleInputPhone" placeholder="081234567890" name="phone" value="{{$user->phone ?? old('phone')}}">
                             @error('phone') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
-                        <div class="form-group">
-                            <label for="exampleInputAffiliation">Nama Instansi / Organisasi</label>
-                            <input type="text" class="form-control @error('affiliation') is-invalid @enderror" id="exampleInputAffiliation" placeholder="Nama Instansi/Organisasi" name="affiliation" value="{{$user->affiliation ?? old('affiliation')}}">
-                            @error('affiliation') <span class="text-danger">{{$message}}</span> @enderror
-                        </div>
-                        @if($user->role_id == 2)
-                        <strong><span class="text-danger">Pastikan data Anda diisi dengan lengkap supaya dapat mendapatkan akses menu yang membutuhkan kelengkapan data Anda. Jika Anda mengosongkan data, maka anda tidak dapat mengakses menu yang terkunci.</span></strong>
-                        @endif
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary">Simpan</button>

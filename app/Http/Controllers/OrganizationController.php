@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrganizationNotification;
 use App\Notifications\OrganizationUpdateNotification;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class OrganizationController extends Controller
 {
@@ -16,20 +20,29 @@ class OrganizationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    function __construct()
     {
-        $organizations = Organization::all();
-        // jika user yang login role adalah admin
+        $this->middleware('permission:organization-read|organization-create|organization-update|organization-delete', ['only' => ['index','store', 'show']]);
+        $this->middleware('permission:organization-create', ['only' => ['create','store']]);
+        $this->middleware('permission:organization-update', ['only' => ['edit','update']]);
+        $this->middleware('permission:organization-delete', ['only' => ['destroy']]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(): View
+    {
         $user = Auth::user();
-        if ($user -> role_id == '1') {
-            return view('organizations.index', [
-                'organizations' => $organizations
-            ])->with([
-                'user' => $user,
-            ]);
-        // selain role admin
+        $roles = Role::all();
+        if($user->hasRole('Admin')) {
+        $organizations = Organization::all();
+        return view('organizations.index', ['organizations' => $organizations])->with(['user' => $user,]);
         } else {
-            return view('404');
+            $organizations = Organization::where('created_by', $user->id)->get();
+            return view('organizations.index', ['organizations' => $organizations])->with(['user' => $user]);
         }
     }
 
@@ -38,16 +51,10 @@ class OrganizationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
         $user = Auth::user();
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            return view('organizations.create')->with(['user' => $user]);
-        // selain role admin
-        } else {
-            return view('404');
-        }
+        return view('organizations.create')->with(['user' => $user]);
     }
 
     /**
@@ -56,7 +63,7 @@ class OrganizationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $request->validate([
@@ -87,17 +94,11 @@ class OrganizationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id): View
     {
         $user = Auth::user();
         $organization = Organization::find($id);
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            return view('organizations.show', ['organization' => $organization])->with(['user' => $user]);
-        // selain role admin
-        } else {
-            return view('404');
-        }
+        return view('organizations.show', ['organization' => $organization])->with(['user' => $user]);
     }
 
     /**
@@ -106,17 +107,11 @@ class OrganizationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id): View
     {
         $user = Auth::user();
         $organization = Organization::find($id);
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
-            return view('organizations.edit', ['organization' => $organization])->with(['user' => $user]);
-        // selain role admin
-        } else {
-            return view('404');
-        }
+        return view('organizations.edit', ['organization' => $organization])->with(['user' => $user]);
         
     }
 
@@ -127,7 +122,7 @@ class OrganizationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $user = Auth::user();
         $request->validate([
@@ -156,7 +151,7 @@ class OrganizationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
         $organization = Organization::find($id);
         if ($organization) $organization->delete();

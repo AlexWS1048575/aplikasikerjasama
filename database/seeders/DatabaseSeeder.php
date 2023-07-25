@@ -22,14 +22,15 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            MainAccountSeeder::class,
-            RoleSeeder::class,
+            PermissionTableSeeder::class,
             StatusSeeder::class,
             TypeSeeder::class,
             CorporationTypeSeeder::class,
             DurationTypeSeeder::class,
             OrganizationSeeder::class,
             RequesterSeeder::class,
+            MainAccountSeeder::class,
+            SecondAccountSeeder::class,
         ]);
     }
 }

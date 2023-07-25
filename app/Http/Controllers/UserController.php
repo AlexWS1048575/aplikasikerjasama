@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Arr;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Hash;
+use DB;
 
 class UserController extends Controller
 {
@@ -14,24 +20,23 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    function __construct()
     {
-        // $users = User::all();
-        // return view('users.index', [
-        //     'users' => $users
-        // ]);
+        $this->middleware('permission:user-read|user-create|user-update|user-delete', ['only' => ['index','store', 'show']]);
+        $this->middleware('permission:user-create', ['only' => ['create','store']]);
+        $this->middleware('permission:user-update', ['only' => ['edit','update']]);
+        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+    }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(): View
+    {
         $users = User::all();
-        $pengguna = Auth::user();
-        if ($pengguna->role_id == '1') {
-            return view('users.index', [
-                'users' => $users
-            ])->with([
-                'pengguna' => $pengguna,
-            ]);
-        } else {
-            return view('404');
-        }
+        return view('users.index', ['users' => $users]);
     }
 
     /**
@@ -39,16 +44,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
-        $pengguna = Auth::user();
-        if ($pengguna->role_id == '1') {
-            return view('users.create');
-        } else {
-            return view('404');
-        }
-        
-        // return view('users.create');
+        $roles = Role::pluck('name', 'name')->all();
+        return view('users.create', compact('roles'));
     }
 
     /**
@@ -57,18 +56,20 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|confirmed'
+            'password' => 'required|min:8|confirmed',
+            'roles' => 'required',
         ]);
         $array = $request->only([
             'name', 'email', 'password'
         ]);
         $array['password'] = bcrypt($array['password']);
         $user = User::create($array);
+        $user->assignRole($request->input('roles'));
         return redirect()->route('users.index')
             ->with('success_message', 'Data User berhasil ditambahkan!');
     }
@@ -79,9 +80,10 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id): View
     {
-        //
+        $user = User::find($id);
+        return view('users.show',compact('user'));
     }
 
     /**
@@ -90,24 +92,14 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id): View
     {
-        // $user = User::find($id);
-        // if (!$user) return redirect()->route('users.index')
-        //     ->with('error_message', 'User dengan id'.$id.' tidak ditemukan!');
-        //     return view('users.edit', [
-        //         'user' => $user
-        // ]);
         $user = User::find($id);
-        $roles = Role::all();
+        $roles = Role::pluck('name', 'name')->all();
+        $userRole = $user->roles->pluck('name','name')->all();
         $pengguna = Auth::user();
-        if (($pengguna->role_id == '1') && ($user->id > '2')) {
-            if (!$user) return redirect()->route('users.index')
-                ->with('error_message', 'User dengan id '.$id.' tidak ditemukan!');
-                return view('users.edit', ['user' => $user], compact('roles'));
-        } else {
-            return view('404');
-        }
+        
+        return view('users.edit', ['user' => $user], compact('roles', 'userRole'));
     }
 
     /**
@@ -117,20 +109,27 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$id,
-            'password' => 'sometimes|nullable|confirmed',
-            'role_id' => 'required'
+            'password' => 'same:confirm-password',
+            'roles' => 'required'
         ]);
+        $input = $request->all();
+
+        if(!empty($input['password'])) { 
+            $input['password'] = Hash::make($input['password']);
+        } else {
+            $input = Arr::except($input,array('password'));    
+        }
+
         $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->role_id = $request->role_id;
+        $user->update($input);
         if ($request->password) $user->password = bcrypt($request->password);
-        $user->save();
+        DB::table('model_has_roles')->where('model_id',$id)->delete();
+        $user->assignRole($request->input('roles'));
         return redirect()->route('users.index')
             ->with('success_message', 'Data User berhasil diubah!');
     }
@@ -141,12 +140,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, $id): RedirectResponse
     {
-        $user = User::find($id);
-        if ($id == $request->user()->id) return redirect()->route('users.index')
-            ->with('error_message', 'Anda tidak dapat menghapus diri sendiri!');
-        if ($user) $user->delete();
+        $user = User::find($id)->delete();
         return redirect()->route('users.index')
             ->with('success_message', 'Data User berhasil dihapus!');
     }

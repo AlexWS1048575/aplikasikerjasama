@@ -22,16 +22,13 @@
                     <h5><b>Q : Apakah saya dapat mengubah password?</b></h5>
                     <h5>A : Ya. Anda dapat mengubah password di menu Ubah Password. Masukkan password lama, password baru (minimal 8), dan konfirmasi password.
                             Password baru tidak bisa sama dengan password lama.</h5><br>
-                    <h5><b>Q : Saya login sebagai role user, ketika saya buka halaman Permohonan Kerjasama, halamannya adalah 401. Mengapa?</b></h5>
-                    <h5>A : Anda harus mengisi semua data pada menu ubah profil. Jika salah satu data ada yang kosong, baik dalam kondisi apapun, anda tidak dapat mengakses menu ini.</h5><br>
                     <h5><b>Q : Saya lupa password saya. Bagaimana saya bisa mereset password?</b></h5>
                     <h5>A : Klik "I forgot my password" di halaman login, kemudian masukkan email yang valid untuk reset passowrd.
                         Setelah menerima link, klik link yang diterima dari email untuk mengubah password tersebut.</h5><br>
                     <h5><b>Q : Saat menambah atau mengedit file, file apa saja yang diperbolehkan untuk diupload?</b></h5>
                     <h5>A : Semua jenis file yang tidak membahayakan, disarankan upload file berupa PDF. Batas maksimal file adalah 4 MB.</h5><br>
-                    <h5><b>Q : Saya mencoba buka beberapa menu, tetapi redirect ke halaman 404. Mengapa?</b></h5>
-                    <h5>A : Beberapa menu hanya dikhususkan buat untuk role admin, yang dimana role user tidak dapat melihat, menambah, atau mengedit data yang role nya admin,
-                            demi mencegah manipulasi data.</h5><br>
+                    <h5><b>Q : Saya mencoba buka beberapa menu, tetapi redirect ke halaman 403. Mengapa?</b></h5>
+                    <h5>A : Beberapa menu tergantung pada permissions pada role tersebut. Jika tidak diassign, maka user tidak dapat melakukan CRUD, baik akses ataupun input data.</h5><br>
                     <h5><b>Q : Apakah saya bisa mengimport dan mengekspor data ke dalam Excel?</b></h5>
                     <h5>A : Ya. Anda dapat mengimport dan mengekspor data ke dalam Excel. Saat ini hanya role admin yang dapat melakukannya.</h5><br>
                     <h5><b>Q : Saat mengedit data, terdapat menu upload berkas. Apakah saya dapat mengupdate data dengan berkas terbaru atau tanpa berkas?</b></h5>
@@ -47,19 +44,20 @@
                     <h5><b>Q : Apa fungsi tombol "Show", dan apa perbedaanya?</b></h5>
                     <h5>A : Tombol Show berfungsi untuk melihat rincian salah satu data yang sudah diinput oleh user.</h5><br>
                     <h5><b>Q : Apakah saya dapat mengupdate status kerjasama dan status permohonan kerjasama?</b></h5>
-                    <h5>A : Ya. Kamu dapat mengupdate status kerjasama dan status permohonan kerjasama dengan klik tombol Approve atau Cancel pada bagian menu Opsi. Role user tidak dapat mengupdate status, hanya dapat melihat status kerjasama tersebut.</h5><br>
+                    <h5>A : Ya. Kamu dapat mengupdate status kerjasama dan status permohonan kerjasama dengan klik tombol Next Step, Approve atau Cancel pada bagian menu Aksi. Role user tidak dapat mengupdate status, hanya dapat melihat status kerjasama tersebut.</h5><br>
                     <h5><b>Q : Mengapa grafik pada saat data tertentu kosong tidak muncul?</b></h5>
                     <h5>A : Untuk menampilkan grafik pada halaman dashboard, minimal ada 1 data yang terinput.</h5><br>
                     <h5><b>Q : Pada halaman Kerjasama dan Permohonan Kerjasama, disebelah kanan terdapat menu Status. Apakah saya bisa mengubah status tanpa harus masuk ke halaman edit?</b></h5>
-                    <h5>A : Ya. Kamu dapat mengubah status kerjasama dan permohonan kerjasama dengan menekan tombol <i>approve</i> atau <i>cancel</i> yang tertera pada menu tersebut, tetapi hanya berlaku untuk role admin.</h5><br>
+                    <h5>A : Ya. Kamu dapat mengubah status kerjasama dan permohonan kerjasama dengan menekan tombol <i>approve, next step</i> atau <i>cancel</i> yang tertera pada menu tersebut, tetapi hanya berlaku untuk role admin.</h5><br>
                     <h5><b>Q : Mengapa warna notifikasi berbeda-beda dan apa klasifikasi warna tersebut?</b></h5>
                     <h5>A : Tujuan membedakan warna adalah untuk memberikan keterangan ketika user melakukan CRUD atau register. 
-                            Warna abu-abu adalah registrasi oleh user, warna biru adalah <i>create</i> data, warna kuning adalah <i>update</i> data, warna merah adalah status kerjasama dan permohoan kerjasama perlu direvisi
-                            warna hijau adalah status data kerjasama dan permohonan kerjasama sudah di acc.</h5><br>
+                            Warna abu-abu adalah registrasi oleh user, warna biru adalah <i>create</i> data, warna kuning adalah <i>update</i> data, warna merah adalah status kerjasama dan permohoan kerjasama dibatalkan, atau ditolak, atau perlu revisi
+                            warna hijau adalah status data kerjasama dan permohonan kerjasama sudah di approve atau acc.</h5><br>
                     <h5><b>Q : Apakah saya dapat melihat <i>value</i> dari grafik tersebut, dan bagaimana cara melihat nya?</b></h5>
                     <h5>A : Ya. Kamu dapat melihat <i>value</i> dari grafik tersebut, dengan mengarahkan atau klik pada warna grafik tersebut.</h5><br>
                     <h5><b>Q : Apakah saya dapat membuat user dengan 1 email tapi lebih banyak akun?</b></h5>
-                    <h5>A : Tidak bisa. Satu email hanya untuk satu akun saja.</h5><br>
+                    <h5>A : Tidak. Satu email hanya untuk satu akun saja.</h5><br>
+                    
                 </div>
             </div>
         </div>

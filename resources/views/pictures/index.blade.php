@@ -19,7 +19,7 @@
                                 <th>Judul</th>
                                 <th>Gambar</th>
                                 <th>Download</th>
-                                <th>Opsi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>

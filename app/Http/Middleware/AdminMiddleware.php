@@ -17,8 +17,8 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(!Auth::user()->role_id == '2') {
-            return redirect('/home')->with('error_message', 'Access Denied. You are not an Admin');
+        if(!Auth::user()->name == 'Admin') {
+            return redirect('/home')->with('error_message', 'Access Denied. Unauthorized!');
         }
         
         return $next($request);

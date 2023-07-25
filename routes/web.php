@@ -11,7 +11,6 @@ use App\Http\Controllers\ChartController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\GuideController;
-use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -95,23 +94,23 @@ Route::get('/guides', [App\Http\Controllers\GuideController::class, 'index'])->n
 Route::post('/mark-as-read', [App\Http\Controllers\HomeController::class, 'markNotification'])->name('markNotification');
 
 // set status menjadi disetujui di modul kerjasama
-Route::get('/setasapproved/{Sid}', [App\Http\Controllers\CorporationController::class, 'setasapproved'])->name('corporations.setasapproved');
+Route::get('/approve/{Sid}', [App\Http\Controllers\CorporationController::class, 'approve'])->name('corporations.approve');
+
+// set status menjadi pending di modul kerjasama
+Route::get('/cancel/{Sid}', [App\Http\Controllers\CorporationController::class, 'cancel'])->name('corporations.cancel');
 
 // set status menjadi in progress di modul kerjasama
-Route::get('/setasrevisions/{Sid}', [App\Http\Controllers\CorporationController::class, 'setasrevisions'])->name('corporations.setasrevisions');
+Route::get('/nextstep/{Sid}', [App\Http\Controllers\CorporationController::class, 'nextstep'])->name('corporations.nextstep');
 
 // ganti profil
 Route::get('/change-profile', [App\Http\Controllers\HomeController::class, 'changeProfile'])->name('change-profile');
 Route::post('/change-profile', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('update-profile');
 
-// upload multiple berkas
-Route::controller(FileController::class)->group(function(){
-    Route::get('file-upload', 'index');
-    Route::post('file-upload', 'store')->name('file.store');
-});
+// set status menjadi in progress di modul permohonan kerjasama
+Route::get('/nextstep2/{Sid}', [App\Http\Controllers\WishController::class, 'nextstep2'])->name('wishes.nextstep2');
 
 // set status menjadi disetujui di modul permohonan kerjasama
 Route::get('/wishcometrue/{Sid}', [App\Http\Controllers\WishController::class, 'wishcometrue'])->name('wishes.wishcometrue');
 
-// set status menjadi in progress di modul permohonan kerjasama
+// set status menjadi pending di modul permohonan kerjasama
 Route::get('/wishcancelled/{Sid}', [App\Http\Controllers\WishController::class, 'wishcancelled'])->name('wishes.wishcancelled');

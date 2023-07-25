@@ -33,7 +33,7 @@ class LoginController extends Controller
     // fungsi login untuk role
     protected function authenticated() {
         // jika yang login role nya adalah user
-        if(Auth::user()->role_id == '1') {
+        if(Auth::user()->name == 'Admin') {
             return redirect('home')->with('success_message', 'Welcome to Dashboard, Admin');
         } else {
             return redirect('home')->with('success_message', 'Welcome to Dashboard, User');

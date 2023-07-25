@@ -28,9 +28,11 @@ class SendNewUserNotification
      */
     public function handle($event)
     {
-        $admins = User::whereHas('role', function ($query) {
-            $query->where('id', 1);
-        })->get();
+        /* $admins = User::whereHas('role', function ($query) {
+            $query->where('name', 'Admin');
+        })->get(); */
+
+        $admins = User::where('name', 'Admin')->get();
 
         Notification::send($admins, new NewUserNotification($event->user));
     }

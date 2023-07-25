@@ -8,9 +8,11 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    @can('corporation-create')
                     <a href="{{route('corporations.create')}}" class="btn btn-primary mb-2">
                         Tambah
                     </a>
+                    @endcan
                     <a href="{{route('corporations.downloadpdf')}}" class="btn btn-success mb-2">
                         Cetak PDF
                     </a>
@@ -38,7 +40,7 @@
                             <th class="align-middle">Status Kerjasama</th>
                             <th class="align-middle">Status Masa Aktif Kerjasama</th>
                             <th class="align-middle">Download</th>
-                            <th class="align-middle">Opsi</th>
+                            <th class="align-middle">Aksi</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,30 +54,28 @@
                                 <td>{{ $corporation->summary }}</td>
                                 <td>{{ $corporation->pic }}</td>
                                 <td>{{ \Carbon\Carbon::parse($corporation->assignment_date)->format('d/m/Y') }}</td>
-                                @if(($corporation->durationtype_id == 1) && ($corporation->duration > 12))
+                                @if(($corporation->durationtype_id == '1') && ($corporation->duration > '12'))
                                 <td>{{ $corporation->duration }} {{ $corporation->durationtype->name }} ({{ floor($corporation->duration / 12) }} Tahun {{ $corporation->duration % 12 }} Bulan)</td>
-                                @elseif($corporation->durationtype_id == 1)
+                                @elseif($corporation->durationtype_id == '1')
                                 <td>{{ $corporation->duration }} {{ $corporation->durationtype->name }}</td>
                                 @else
                                 <td>{{ $corporation->duration }} {{ $corporation->durationtype->name }}</td>
                                 @endif
-                                <!-- <td>{{ date('d-m-Y', strtotime($corporation->assignment_date)) }}</td> -->
-                                @if($corporation->durationtype_id == 1)
+                                @if($corporation->durationtype_id == '1')
                                 <td>{{ \Carbon\Carbon::parse($corporation->assignment_date)->addMonth($corporation->duration)->format('d/m/Y') }}</td>
                                 @else
                                 <td>{{ \Carbon\Carbon::parse($corporation->assignment_date)->addYear($corporation->duration)->format('d/m/Y') }}</td>
                                 @endif
                                 <td>{{ $corporation->type->name }}</td>
                                 <td>{{ $corporation->corporationtype->name }}</td>
-                                <!-- <td>{{ $corporation->status->name }}</td> -->
-                                @if($corporation->status_id == 1)
-                                <td class="text-primary"><strong>{{ $corporation->status->name }}</strong></td>
-                                @elseif ($corporation->status_id == 2)
+                                @if($corporation->status_id == '1')
                                 <td class="text-warning"><strong>{{ $corporation->status->name }}</strong></td>
+                                @elseif ($corporation->status_id == 2)
+                                <td class="text-primary"><strong>{{ $corporation->status->name }}</strong></td>
                                 @else
                                 <td class="text-success"><strong>{{ $corporation->status->name }}</strong></td>
                                 @endif
-                                @if($corporation->durationtype_id == 1)
+                                @if($corporation->durationtype_id == '1')
                                     @if((\Carbon\Carbon::parse($corporation->assignment_date)->addMonth($corporation->duration)) > now())
                                     <td class="text-success"><strong>Active</strong></td>
                                     @else
@@ -88,26 +88,45 @@
                                     <td class="text-danger"><strong>Expired</strong></td>
                                     @endif
                                 @endif
-                                <td><a href="{{ url('storage/attachment/'.$corporation->attachment) }}" target="_blank" download>Download</a></td>
                                 <td>
-                                    @if($corporation->status_id < 3)
-                                    <a href="{{route('corporations.setasapproved', $corporation)}}" onclick="return confirm('Apakah anda ingin update status dokumen ini menjadi disetujui?')" class="btn btn-success btn-xs" method="post">
-                                        Set To Approve
+                                    @if(!$corporation->attachment)
+                                    No Attachment
+                                    @else
+                                    <a href="{{ url('storage/attachment/'.$corporation->attachment) }}" target="_blank" download>Download</a>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($corporation->status_id == '1')
+                                    <a href="{{route('corporations.nextstep', $corporation)}}" onclick="return confirm('Apakah anda ingin update status dokumen ini?')" class="btn btn-info btn-xs" method="post">
+                                        Next Step
+                                    </a>
+                                    @elseif($corporation->status_id == '2')
+                                    <a href="{{route('corporations.approve', $corporation)}}" onclick="return confirm('Apakah anda ingin update status dokumen ini menjadi disetujui?')" class="btn btn-success btn-xs" method="post">
+                                        Approve
+                                    </a>
+                                    <a href="{{route('corporations.cancel', $corporation)}}" onclick="return confirm('Apakah anda ingin membatalkan dokumen ini?')" class="btn btn-warning btn-xs" method="post">
+                                        Cancel
                                     </a>
                                     @else
-                                    <a href="{{route('corporations.setasrevisions', $corporation)}}" onclick="return confirm('Apakah anda ingin membatalkan dokumen ini?')" class="btn btn-warning btn-xs" method="post">
+                                    <a href="{{route('corporations.cancel', $corporation)}}" onclick="return confirm('Apakah anda ingin membatalkan dokumen ini?')" class="btn btn-warning btn-xs" method="post">
                                         Cancel
                                     </a>
                                     @endif
+                                    @can('corporation-read')
                                     <a href="{{route('corporations.show', $corporation)}}" class="btn btn-secondary btn-xs">
                                         Show
                                     </a>
+                                    @endcan
+                                    @can('corporation-update')
                                     <a href="{{route('corporations.edit', $corporation)}}" class="btn btn-primary btn-xs">
                                         Edit
                                     </a>
+                                    @endcan
+                                    @can('corporation-delete')
                                     <a href="{{route('corporations.destroy', $corporation)}}" onclick="notificationBeforeDelete(event, this)" class="btn btn-danger btn-xs">
                                         Delete
                                     </a>
+                                    @endcan
                                 </td>
                             </tr>
                         @endforeach

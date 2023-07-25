@@ -11,22 +11,31 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="exampleInputName">Nama</label>
+                            <label for="exampleInputName">Nama <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="exampleInputName" placeholder="Nama lengkap" name="name" value="{{old('name')}}">
                             @error('name') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputEmail">Alamat Email</label>
+                            <label for="exampleInputEmail">Alamat Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail" placeholder="Masukkan Email" name="email" value="{{old('email')}}">
                             @error('email') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword">Password</label>
+                            <label for="exampleInputPhone">Nomor Telepon/HP/WA</label>
+                            <input type="number" class="form-control @error('phone') is-invalid @enderror" id="exampleInputPhone" placeholder="081234567890" name="phone" value="{{old('phone')}}">
+                            @error('phone') <span class="text-danger">{{$message}}</span> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputRole">Role <span class="text-danger">*</span></label>
+                            {!! Form::select('roles[]', $roles,[], array('class' => 'form-control','multiple')) !!}
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword">Password <span class="text-danger">*</span></label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="exampleInputPassword" placeholder="Password" name="password">
                             @error('password') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword">Konfirmasi Password</label>
+                            <label for="exampleInputPassword">Konfirmasi Password <span class="text-danger">*</span></label>
                             <input type="password" class="form-control" id="exampleInputPassword" placeholder="Konfirmasi Password" name="password_confirmation">
                         </div>
                     </div>

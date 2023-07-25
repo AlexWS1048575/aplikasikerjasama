@@ -152,7 +152,7 @@ return [
     'layout_boxed' => null,
     'layout_fixed_sidebar' => true,
     'layout_fixed_navbar' => true,
-    'layout_fixed_footer' => null,
+    'layout_fixed_footer' => true,
     'layout_dark_mode' => null,
 
     /*
@@ -321,30 +321,31 @@ return [
             'text'        => 'Users',
             'url'         => 'users',
             'icon'        => 'fa fa-users',
-            'can'         => 'view-isAdmin',
-        ],
-        [
-            'text'        => 'Organisasi',
-            'url'         => 'organizations',
-            'icon'        => 'far fa-fw fa-file',
-            'can'         => 'view-isAdmin',
-        ],
-        [
-            'text'        => 'Kerjasama',
-            'url'         => 'corporations',
-            'icon'        => 'far fa-fw fa-file',
-            'can'         => 'view-isAdmin',
-        ],
-        [
-            'text'        => 'Permohonan Kerja Sama',
-            'url'         => 'wishes',
-            'icon'        => 'far fa-fw fa-file',
+            'can'         => 'user-create', 'user-read', 'user-update', 'user-delete',
         ],
         [
             'text'        => 'Roles',
             'url'         => 'roles',
             'icon'        => 'fa fa-life-ring',
-            'can'         => 'view-isAdmin',
+            'can'         => 'role-create', 'role-read', 'role-update', 'role-delete',
+        ],
+        [
+            'text'        => 'Organisasi',
+            'url'         => 'organizations',
+            'icon'        => 'far fa-fw fa-file',
+            'can'         => 'organization-create', 'organization-read', 'organization-update', 'organization-delete',
+        ],
+        [
+            'text'        => 'Kerjasama',
+            'url'         => 'corporations',
+            'icon'        => 'far fa-fw fa-file',
+            'can'         => 'corporation-create', 'corporation-read', 'corporation-update', 'corporation-delete',
+        ],
+        [
+            'text'        => 'Permohonan Kerja Sama',
+            'url'         => 'wishes',
+            'icon'        => 'far fa-fw fa-file',
+            'can'         => 'wish-create', 'wish-read', 'wish-update', 'wish-delete',
         ],
         ['header' => 'GUIDELINES'],
         [

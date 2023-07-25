@@ -17,10 +17,10 @@ class StatusSeeder extends Seeder
     {
         $data = [
             [
-                'name' => 'In Progress',
+                'name' => 'Pending',
             ],
             [
-                'name' => 'Needs Revision',
+                'name' => 'In Progress',
             ],
             [
                 'name' => 'Approved',

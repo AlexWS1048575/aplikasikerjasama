@@ -8,9 +8,11 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    @can('organization-create')
                     <a href="{{route('organizations.create')}}" class="btn btn-primary mb-2">
                         Tambah
                     </a>
+                    @endcan
                     <table class="table table-hover table-bordered table-stripped" id="example2" style="text-align: center">
                         <thead>
                         <tr>
@@ -21,7 +23,7 @@
                             <th>No. HP/WA</th>
                             <th>Nama Pimpinan</th>
                             <th>Nama PIC</th>
-                            <th>Opsi</th>
+                            <th>Aksi</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -38,14 +40,16 @@
                                     <a href="{{route('organizations.show', $organizationy)}}" class="btn btn-secondary btn-xs">
                                         Show
                                     </a>
+                                    @can('organization-update')
                                     <a href="{{route('organizations.edit', $organizationy)}}" class="btn btn-primary btn-xs">
                                         Edit
                                     </a>
-                                    @if ($user->role_id == 1)
+                                    @endcan
+                                    @can('organization-delete')
                                     <a href="{{route('organizations.destroy', $organizationy)}}" onclick="notificationBeforeDelete(event, this)" class="btn btn-danger btn-xs">
                                         Delete
                                     </a>
-                                    @endif
+                                    @endcan
                                 </td>
                             </tr>
                         @endforeach

@@ -9,6 +9,7 @@ use App\Models\Status;
 use App\Models\User;
 use DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\WishNotification;
@@ -20,6 +21,12 @@ use App\Notifications\WishSuccessNotification;
 use App\Notifications\WishSuccessToUserNotification;
 use App\Notifications\WishRejectedNotification;
 use App\Notifications\WishRejectedToUserNotification;
+use App\Notifications\WishInProgressNotification;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+
 
 class WishController extends Controller
 {
@@ -28,33 +35,29 @@ class WishController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    function __construct()
+    {
+        $this->middleware('permission:wish-read|wish-create|wish-update|wish-delete', ['only' => ['index','store', 'show']]);
+        $this->middleware('permission:wish-create', ['only' => ['create','store']]);
+        $this->middleware('permission:wish-update', ['only' => ['edit','update']]);
+        $this->middleware('permission:wish-delete', ['only' => ['destroy']]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(): View
     {
         $user = Auth::user();
-        // jika user yang login role adalah admin
-        if ($user->role_id == '1') {
+        $roles = Role::all();
+        if($user->hasRole('Admin')) {
             $wishes = Wish::all();
-            return view('wishes.index', [
-                'wishes' => $wishes
-            ])->with([
-                'user' => $user,
-            ]);
-            // selain role admin
+            return view('wishes.index', ['wishes' => $wishes])->with(['user' => $user]);
         } else {
-            // jika salah satu data user tidak lengkap
-            if ((!$user->affiliation) || (!$user->phone)) {
-                // redirect ke halaman unauthorized, dimana user wajibkan mengisi data terlebih dahulu untuk mengakses data
-                return view('401');
-                // jika semua data user lengkap
-            } else {
-                // data permohonan diambil dari data user yang input, tidak diambil dari semua data
-                $wishes = Wish::where('created_by', $user->id)->get();
-                return view('wishes.index', [
-                    'wishes' => $wishes
-                ])->with([
-                    'user' => $user,
-                ]);
-            }
+            $wishes = Wish::where('created_by', $user->id)->get();
+            return view('wishes.index', ['wishes' => $wishes])->with(['user' => $user]);
         }
     }
 
@@ -63,7 +66,7 @@ class WishController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
         $user = Auth::user();
         $requesters = Requester::all();
@@ -76,181 +79,63 @@ class WishController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-{
-    $user = Auth::user();
-    $validateData = $request->validate([
-        'name' => 'required',
-        'detail' => 'required',
-        'organization' => 'required',
-        'requester_id' => 'required',
-        'filename' => 'file|mimes:pdf|max:4096',
-    ]);
+    public function store(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        $validateData = $request->validate([
+            'name' => 'required',
+            'detail' => 'required',
+            'organization' => 'required',
+            'requester_id' => 'required',
+            'filename' => 'file|mimes:pdf|max:4096',
+        ]);
+        // jika ada file
+        if ($request->hasFile('filename')) {
+            $wish = new Wish();
+            $wish->name = $validateData['name'];
+            $wish->detail = $validateData['detail'];
+            $wish->phone = $request->phone;
+            $wish->pic = $request->pic;
+            $wish->organization = $validateData['organization'];
+            $wish->requester_id = $validateData['requester_id'];
+            $wish->created_by = $user->id;
+            $wish->updated_by = $user->id;
 
-    // jika punya berkas
-    if ($request->hasFile('filename')) {
-        $wish = new Wish();
-        $wish->name = $validateData['name'];
-        $wish->detail = $validateData['detail'];
-        $wish->phone = $request->phone;
-        $wish->pic = $request->pic;
-        $wish->organization = $validateData['organization'];
-        $wish->requester_id = $validateData['requester_id'];
-        $wish->created_by = $user->id;
-        $wish->updated_by = $user->id;
-        $filenameWithExt = $request->file('filename')->getClientOriginalName();
-        $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-        $extension = $request->file('filename')->getClientOriginalExtension();
-        $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-        $path = public_path('wishes-pdf') . '/' . $newFilename;
-        $request->file('filename')->move(public_path('wishes-pdf'), $newFilename);
-        $wish->filename = $newFilename;
-        $wish->save();
-    } else {
-        $wish = new Wish();
-        $wish->name = $validateData['name'];
-        $wish->detail = $validateData['detail'];
-        $wish->phone = $request->phone;
-        $wish->pic = $request->pic;
-        $wish->organization = $validateData['organization'];
-        $wish->requester_id = $validateData['requester_id'];
-        $wish->created_by = $user->id;
-        $wish->updated_by = $user->id;
-        $wish->save();
-    }
-    
-    // send notifications
-    if ($user->role_id == 1) {
-        // if user is admin
+            // berkas disimpan ke dalam folder storage
+            $filenameWithExt = $request->file('filename')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('filename')->getClientOriginalExtension();
+            $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
+            $path = $request->file('filename')->storeAs('filename', $newFilename);
+            $wish->filename = $newFilename;
+            
+            // berkas disimpan ke dalam folder public
+            /* $filenameWithExt = $request->file('filename')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('filename')->getClientOriginalExtension();
+            $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
+            $path = $request->file('filename')->move('filename', $newFilename);
+            $wish->filename = $newFilename; */
+
+            $wish->save();
+        // jika tidak punya berkas
+        } else {
+            $wish = new Wish();
+            $wish->name = $validateData['name'];
+            $wish->detail = $validateData['detail'];
+            $wish->phone = $request->phone;
+            $wish->pic = $request->pic;
+            $wish->organization = $validateData['organization'];
+            $wish->requester_id = $validateData['requester_id'];
+            $wish->created_by = $user->id;
+            $wish->updated_by = $user->id;
+            $wish->save();
+        }
+        // kirim notifikasi bahwa data berhasil diinput
         Notification::send($user, new WishNotification($request->name));
-    } else {
-        // if user is not admin
-        $admin = User::where('role_id', 1)->first();
-        Notification::send($user, new WishNotification($request->name));
-        Notification::send($admin, new WishToAdminNotification($request->name, $user));
+        return redirect()->route('wishes.index')
+            ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
     }
-
-    return redirect()->route('wishes.index')
-        ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
-}
-
-    // public function store(Request $request)
-    // {
-    //     $user = Auth::user();
-    //     $validateData = $request->validate([
-    //         'name' => 'required',
-    //         'detail' => 'required',
-    //         'organization' => 'required',
-    //         'requester_id' => 'required',
-    //         'filename' => 'file|mimes:pdf|max:4096',
-    //     ]);
-
-    //     // jika punya berkas
-    //     if ($request->hasFile('filename')) {
-    //         $wish = new Wish();
-    //         $wish->name = $validateData['name'];
-    //         $wish->detail = $validateData['detail'];
-    //         $wish->phone = $request->phone;
-    //         $wish->pic = $request->pic;
-    //         $wish->organization = $validateData['organization'];
-    //         $wish->requester_id = $validateData['requester_id'];
-    //         $wish->created_by = $user->id;
-    //         $wish->updated_by = $user->id;
-    //         $filenameWithExt = $request->file('filename')->getClientOriginalName();
-    //         $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-    //         $extension = $request->file('filename')->getClientOriginalExtension();
-    //         $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-    //         // $path = $request->file('filename')->storeAs('wishes', $newFilename);
-    //         $path = $request->file('filename')->storeAs('public/wishes-pdf', $newFilename);
-    //         $wish->filename = $newFilename;
-    //         $wish->save();
-    //         // jika tidak punya berkas
-    //     } else {
-    //         $wish = new Wish();
-    //         $wish->name = $validateData['name'];
-    //         $wish->detail = $validateData['detail'];
-    //         $wish->phone = $request->phone;
-    //         $wish->pic = $request->pic;
-    //         $wish->organization = $validateData['organization'];
-    //         $wish->requester_id = $validateData['requester_id'];
-    //         $wish->created_by = $user->id;
-    //         $wish->updated_by = $user->id;
-    //         $wish->save();
-    //     }
-    //     // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
-    //     if ($user->role_id == 1) {
-    //         Notification::send($user, new WishNotification($request->name));
-    //         // selain role admin
-    //     } else {
-    //         // $iduser adalah user dengan role admin
-    //         $iduser = User::where('role_id', '=', '1')->get();
-    //         // kirim notifikasi ke user
-    //         Notification::send($user, new WishNotification($request->name));
-    //         // kirim norifikasi ke admin
-    //         Notification::send($iduser, new WishToAdminNotification($request->name, $user));
-    //     }
-
-    //     return redirect()->route('wishes.index')
-    //         ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
-    // }
-    // public function store(Request $request)
-    // {
-    //     $user = Auth::user();
-    //     $validateData = $request->validate([
-    //         'name' => 'required',
-    //         'detail' => 'required',
-    //         'organization' => 'required',
-    //         'requester_id' => 'required',
-    //         'filename' => 'file|mimes:pdf|max:4096',
-    //     ]);
-
-    //     // jika punya berkas
-    //     if ($request->hasFile('filename')) {
-    //         $wish = new Wish();
-    //         $wish->name = $validateData['name'];
-    //         $wish->detail = $validateData['detail'];
-    //         $wish->phone = $request->phone;
-    //         $wish->pic = $request->pic;
-    //         $wish->organization = $validateData['organization'];
-    //         $wish->requester_id = $validateData['requester_id'];
-    //         $wish->created_by = $user->id;
-    //         $wish->updated_by = $user->id;
-    //         $filenameWithExt = $request->file('filename')->getClientOriginalName();
-    //         $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-    //         $extension = $request->file('filename')->getClientOriginalExtension();
-    //         $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-    //         $path = $request->file('filename')->storeAs('wishes', $newFilename, 'public');
-    //         $wish->filename = $newFilename;
-    //         $wish->save();
-    //     } else {
-    //         $wish = new Wish();
-    //         $wish->name = $validateData['name'];
-    //         $wish->detail = $validateData['detail'];
-    //         $wish->phone = $request->phone;
-    //         $wish->pic = $request->pic;
-    //         $wish->organization = $validateData['organization'];
-    //         $wish->requester_id = $validateData['requester_id'];
-    //         $wish->created_by = $user->id;
-    //         $wish->updated_by = $user->id;
-    //         $wish->save();
-    //     }
-
-    //     // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
-    //     if ($user->role_id == 1) {
-    //         Notification::send($user, new WishNotification($request->name));
-    //     } else {
-    //         // $iduser adalah user dengan role admin
-    //         $iduser = User::where('role_id', '=', '1')->get();
-    //         // kirim notifikasi ke user
-    //         Notification::send($user, new WishNotification($request->name));
-    //         // kirim norifikasi ke admin
-    //         Notification::send($iduser, new WishToAdminNotification($request->name, $user));
-    //     }
-
-    //     return redirect()->route('wishes.index')
-    //         ->with('success_message', 'Data Permohonan Kerjasama berhasil ditambahkan!');
-    // }
-
 
     /**
      * Display the specified resource.
@@ -258,7 +143,7 @@ class WishController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id): View
     {
         $wish = Wish::find($id);
         $requesters = Requester::all();
@@ -273,7 +158,7 @@ class WishController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id): View
     {
         $wish = Wish::find($id);
         $requesters = Requester::all();
@@ -289,7 +174,7 @@ class WishController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $user = Auth::user();
         $validateData = $request->validate([
@@ -311,13 +196,25 @@ class WishController extends Controller
             $wish->requester_id = $validateData['requester_id'];
             $wish->status_id = $request->status_id;
             $wish->updated_by = $user->id;
+
+            // berkas disimpan ke dalam folder storage
+            /* $filenameWithExt = $request->file('filename')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('filename')->getClientOriginalExtension();
+            $newFilename = $filename . '_' . 'updated' . '_' . date('YmdHis') . '.' . $extension;
+            Storage::delete('filename/' . $wish->filename);
+            $path = $request->file('filename')->storeAs('filename', $newFilename);
+            $wish->filename = $newFilename; */
+
+            // berkas disimpan ke dalam folder public
             $filenameWithExt = $request->file('filename')->getClientOriginalName();
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('filename')->getClientOriginalExtension();
             $newFilename = $filename . '_' . 'updated' . '_' . date('YmdHis') . '.' . $extension;
-            Storage::delete('wishes/' . $wish->filename);
-            $path = $request->file('filename')->storeAs('wishes', $newFilename);
+            File::delete('filename/' . $wish->filename);
+            $path = $request->file('filename')->move('filename', $newFilename);
             $wish->filename = $newFilename;
+
             $wish->save();
             // jika tidak ada berkas
         } else {
@@ -331,26 +228,7 @@ class WishController extends Controller
             $wish->updated_by = $user->id;
             $wish->save();
         }
-        // kirim notifikasi bahwa data berhasil diinput, jika user yang login admin
-        if (($user->role_id == '1') && ($wish->created_by == '1')) {
-            Notification::send($user, new WishUpdateNotification($request->name));
-            // jika admin menginput data user lain
-        } else if (($user->role_id == '1') && ($wish->created_by > '1')) {
-            // kirim notifikasi ke admin
-            Notification::send($user, new WishUpdateNotification($request->name));
-            // ambil id created_by dari tabel permohonan kerjasama
-            $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
-            // kirim notifikasi ke users 
-            Notification::send($idpengguna, new WishUpdateToUserNotification($request->name));
-            // selain role admin
-        } else {
-            // $iduser adalah user dengan role admin
-            $iduser = User::where('role_id', '=', '1')->get();
-            // kirim notifikasi ke user
-            Notification::send($user, new WishUpdateNotification($request->name));
-            // kirim norifikasi ke admin
-            Notification::send($iduser, new WishUpdateToAdminNotification($request->name, $user));
-        }
+        Notification::send($user, new WishUpdateNotification($request->name));
 
         return redirect()->route('wishes.index')
             ->with('success_message', 'Data Permohonan Kerjasama berhasil diubah!');
@@ -362,16 +240,35 @@ class WishController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
         $wish = Wish::find($id);
-        Storage::delete('wishes/' . $wish->filename);
+        // hapus berkas di folder public atau storage, guna mengurangi sampah pada server
+        // Storage::delete('filename/' . $wish->filename);
+        File::delete('filename/' . $wish->filename);
         if ($wish) $wish->delete();
         return redirect()->route('wishes.index')
             ->with('success_message', 'Daftar Permohonan Kerjasama berhasil dihapus!');
     }
 
-    // set status permohonan kerjasama menjadi setuju
+    // set status permohonan kerjasama menjadi in progress
+    public function nextstep2($id)
+    {
+        $user = Auth::user();
+        $wish = Wish::find($id);
+        $wish->update([
+            'status_id' => '2',
+        ]);
+        // ambil id created_by dari tabel permohonan kerjasama
+        $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
+        // kirim notifikasi bahwa data permohonan telah diupdate ke admin dan user
+        Notification::send($user, new WishInProgressNotification($wish->name));
+        // Notification::send($idpengguna, new WishInProgressNotification($wish->name));
+        return redirect()->route('wishes.index')
+            ->with('success_message', 'Status Permohonan Kerjasama berhasil diupdate!');
+    }
+
+    // set status permohonan kerjasama menjadi disetujui
     public function wishcometrue($id)
     {
         $user = Auth::user();
@@ -383,24 +280,24 @@ class WishController extends Controller
         $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
         // kirim notifikasi bahwa data permohonan telah disetujui ke admin dan user
         Notification::send($user, new WishSuccessNotification($wish->name));
-        Notification::send($idpengguna, new WishSuccessToUserNotification($wish->name));
+        // Notification::send($idpengguna, new WishSuccessToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil disetujui!');
     }
 
-    // set status permohonan kerjasama menjadi needs revision (perlu revisi)
+    // set status permohonan kerjasama menjadi pending
     public function wishcancelled($id)
     {
         $user = Auth::user();
         $wish = Wish::find($id);
         $wish->update([
-            'status_id' => '2',
+            'status_id' => '1',
         ]);
         // ambil id created_by dari tabel permohonan kerjasama
         $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
-        // kirim notifikasi bahwa data permohonan perlu direvisi ke admin dan user
+        // kirim notifikasi bahwa data permohonan dibatalkan atau ditolak ke admin dan user
         Notification::send($user, new WishRejectedNotification($wish->name));
-        Notification::send($idpengguna, new WishRejectedToUserNotification($wish->name));
+        // Notification::send($idpengguna, new WishRejectedToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil dibatalkan!');
     }

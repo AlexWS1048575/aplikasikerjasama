@@ -12,31 +12,34 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="exampleInputName">Nama</label>
+                            <label for="exampleInputName">Nama <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="exampleInputName" placeholder="Nama lengkap" name="name" value="{{$user->name ?? old('name')}}">
                             @error('name') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputEmail">Alamat Email</label>
+                            <label for="exampleInputEmail">Alamat Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail" placeholder="Masukkan Email" name="email" value="{{$user->email ?? old('email')}}">
                             @error('email') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputStatus">Role</label>
-                            <select class="form-control" name="role_id">
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}" {{ $role->id == $user->role_id ? 'selected' : '' }}>{{ $role->name }}</option>
-                                @endforeach
-                            </select>
+                            <label for="exampleInputPhone">Nomor Telepon/HP/WA</label>
+                            <input type="number" class="form-control @error('phone') is-invalid @enderror" id="exampleInputPhone" placeholder="081234567890" name="phone" value="{{$user->phone ?? old('phone')}}">
+                            @error('phone') <span class="text-danger">{{$message}}</span> @enderror
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group">
+                                <strong>Role <span class="text-danger">*</span></strong>
+                                {!! Form::select('roles[]', $roles,$userRole, array('class' => 'form-control','multiple')) !!}
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword">Password</label>
+                            <label for="exampleInputPassword">Password <span class="text-danger">*</span></label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="exampleInputPassword" placeholder="Password" name="password">
                             @error('password') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword">Konfirmasi Password</label>
-                            <input type="password" class="form-control" id="exampleInputPassword" placeholder="Konfirmasi Password" name="password_confirmation">
+                            <label for="exampleInputPassword">Konfirmasi Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="exampleInputPassword" placeholder="Konfirmasi Password" name="confirm-password">
                         </div>
                     </div>
                     <div class="card-footer">

@@ -25,10 +25,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         \Gate::define('view-isAdmin', function ($user) {
-            if ($user->role_id == '1') {
+            if ($user->name == 'Admin') {
                 return true;
+            } else {
+                return false;
             }
-            return false;
         });
     }
 }

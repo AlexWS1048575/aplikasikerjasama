@@ -55,7 +55,11 @@
                         <div class="form-group">
                             <label for="exampleInputFile">Berkas Permohonan Kerjasama (PDF)</label>
                             <input type="file" class="form-control @error('filename') is-invalid @enderror" id="exampleInputFile" placeholder="Gambar" name="filename" value="{{$wish->filename ?? old('filename')}}">
-                            <br>Berkas Lama <a href="{{ url('/storage/berkas/'.$wish->filename) }}" target="_blank" download>Download</a>
+                            @if(!$wish->filename)
+                            Tidak ada Berkas Lama
+                            @else
+                            <br>Berkas Lama <a href="{{ url('/storage/filename/'.$wish->filename) }}" target="_blank" download>Download</a>
+                            @endif
                             @error('filename') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                     </div>

@@ -11,17 +11,17 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="exampleInputOldPassword">Password Lama</label>
+                            <label for="exampleInputOldPassword">Password Lama <span class="text-danger">*</span></label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="exampleInputOldPassword" placeholder="Password Lama" name="old_password">
                             @error('old_password') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword">Password Baru</label>
+                            <label for="exampleInputPassword">Password Baru <span class="text-danger">*</span></label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="exampleInputPassword" placeholder="Password Baru (min: 8)" name="new_password">
                             @error('new_password') <span class="text-danger">{{$message}}</span> @enderror
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputConfirmPassword">Konfirmasi Password</label>
+                            <label for="exampleInputConfirmPassword">Konfirmasi Password <span class="text-danger">*</span></label>
                             <input type="password" class="form-control" id="exampleInputConfirmPassword" placeholder="Konfirmasi Password" name="password_confirmation">
                             @error('password_confirmation') <span class="text-danger">{{$message}}</span> @enderror
                         </div>

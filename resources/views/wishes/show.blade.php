@@ -44,9 +44,9 @@
                             <div class="form-group">
                                 <strong>Status Permohonan Kerjasama : </strong>
                                 @if($wish->status_id == 1)
-                                <span class="text-primary"><strong>{{ $wish->status->name }}</strong></span>
-                                @elseif($wish->status_id == 2)
                                 <span class="text-warning"><strong>{{ $wish->status->name }}</strong></span>
+                                @elseif($wish->status_id == 2)
+                                <span class="text-primary"><strong>{{ $wish->status->name }}</strong></span>
                                 @else
                                 <span class="text-success"><strong>{{ $wish->status->name }}</strong></span>
                                 @endif

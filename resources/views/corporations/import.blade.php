@@ -11,14 +11,14 @@
             <div class="card">
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="exampleInputFile">Berkas</label>
+                        <label for="exampleInputFile">Berkas <span class="text-danger">*</span></label>
                         <input type="file" class="form-control @error('file') is-invalid @enderror" id="exampleInputFile" placeholder="Berkas" name="file" value="{{old('file')}}">
                         @error('file') <span class="text-danger">{{$message}}</span> @enderror
                     </div>
-                    <span class="text-danger">Perhatikan posisi tabel di excel sebelum mengimpornya. Format kolom nya adalah "Nama", "Email", "Nomor Dokumen", "Nomor HP(WA)", "Ringkasan", "PIC", "Tanggal Aktif", "Durasi",  dan "Tipe Durasi".</span>
+                    <span class="text-danger">Perhatikan posisi tabel di excel sebelum mengimpor. Format kolom nya adalah "Nama", "Judul (Title)", "Nomor Dokumen", "Nomor HP(WA)", "Ringkasan", "PIC", "Tanggal Aktif", "Durasi",  dan "Tipe Durasi".</span>
                     <br><span class="text-danger">Jika tipe durasi adalah Bulan, maka input 1, jika tipe durasi adalah tahun, maka input 2.</span>
-                    <br><span class="text-danger">Format tanggal pada file Excel adalah mm/dd/YYYY. Contoh : 15 November 2022 ditulis 11/15/2022.</span>
-                    <br><span class="text-danger">Jika tidak ada data yang diisi saat mengimport data yang bersifat wajib diisi, seperti kolom "Nomor Dokumen", harap menuliskan <b>null</b> pada file Excel tersebut.</span>
+                    <br><span class="text-danger">Format tanggal pada file Excel adalah mm/dd/YYYY. Contoh : 13 November 2022 ditulis 11/15/2022.</span>
+                    <br><span class="text-danger">Jika tidak ada data yang diisi saat mengimpor data yang bersifat wajib diisi, seperti kolom "Nomor Dokumen", harap menuliskan <b>null</b> pada file Excel tersebut.</span>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary">Import</button>
                         <a href="{{route('corporations.index')}}" class="btn btn-default">
