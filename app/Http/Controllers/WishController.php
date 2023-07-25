@@ -22,6 +22,7 @@ use App\Notifications\WishSuccessToUserNotification;
 use App\Notifications\WishRejectedNotification;
 use App\Notifications\WishRejectedToUserNotification;
 use App\Notifications\WishInProgressNotification;
+use App\Notifications\WishInProgressToUserNotification;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\View\View;
@@ -102,20 +103,20 @@ class WishController extends Controller
             $wish->updated_by = $user->id;
 
             // berkas disimpan ke dalam folder storage
-            $filenameWithExt = $request->file('filename')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('filename')->getClientOriginalExtension();
-            $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-            $path = $request->file('filename')->storeAs('filename', $newFilename);
-            $wish->filename = $newFilename;
-            
-            // berkas disimpan ke dalam folder public
             /* $filenameWithExt = $request->file('filename')->getClientOriginalName();
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('filename')->getClientOriginalExtension();
             $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
-            $path = $request->file('filename')->move('filename', $newFilename);
+            $path = $request->file('filename')->storeAs('filename', $newFilename);
             $wish->filename = $newFilename; */
+            
+            // berkas disimpan ke dalam folder public
+            $filenameWithExt = $request->file('filename')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('filename')->getClientOriginalExtension();
+            $newFilename = $filename . '_' . date('YmdHis') . '.' . $extension;
+            $path = $request->file('filename')->move('filename', $newFilename);
+            $wish->filename = $newFilename;
 
             $wish->save();
         // jika tidak punya berkas
@@ -263,7 +264,7 @@ class WishController extends Controller
         $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
         // kirim notifikasi bahwa data permohonan telah diupdate ke admin dan user
         Notification::send($user, new WishInProgressNotification($wish->name));
-        // Notification::send($idpengguna, new WishInProgressNotification($wish->name));
+        Notification::send($idpengguna, new WishInProgressToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil diupdate!');
     }
@@ -280,7 +281,7 @@ class WishController extends Controller
         $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
         // kirim notifikasi bahwa data permohonan telah disetujui ke admin dan user
         Notification::send($user, new WishSuccessNotification($wish->name));
-        // Notification::send($idpengguna, new WishSuccessToUserNotification($wish->name));
+        Notification::send($idpengguna, new WishSuccessToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil disetujui!');
     }
@@ -297,7 +298,7 @@ class WishController extends Controller
         $idpengguna = User::select('users.*')->join('wishes', 'wishes.created_by', '=', 'users.id')->where('wishes.id', '=', $id)->get();
         // kirim notifikasi bahwa data permohonan dibatalkan atau ditolak ke admin dan user
         Notification::send($user, new WishRejectedNotification($wish->name));
-        // Notification::send($idpengguna, new WishRejectedToUserNotification($wish->name));
+        Notification::send($idpengguna, new WishRejectedToUserNotification($wish->name));
         return redirect()->route('wishes.index')
             ->with('success_message', 'Status Permohonan Kerjasama berhasil dibatalkan!');
     }

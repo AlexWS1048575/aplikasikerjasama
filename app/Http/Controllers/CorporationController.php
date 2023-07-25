@@ -100,18 +100,18 @@ class CorporationController extends Controller
         if ($request->hasFile('attachment')) {
 
             // simpan di folder storage
-            $filenameWithExt = $request->file('attachment')->getClientOriginalName();
-            $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-            $extension = $request->file('attachment')->getClientOriginalExtension();
-            $newFilename = $attachment.'_'.date('YmdHis').'.'.$extension;
-            $path = $request->file('attachment')->storeAs('attachment', $newFilename);
-
-            // simpan di folder public
             /* $filenameWithExt = $request->file('attachment')->getClientOriginalName();
             $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('attachment')->getClientOriginalExtension();
             $newFilename = $attachment.'_'.date('YmdHis').'.'.$extension;
-            $path = $request->file('attachment')->move('attachment', $newFilename); */
+            $path = $request->file('attachment')->storeAs('attachment', $newFilename); */
+
+            // simpan di folder public
+            $filenameWithExt = $request->file('attachment')->getClientOriginalName();
+            $attachment = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('attachment')->getClientOriginalExtension();
+            $newFilename = $attachment.'_'.date('YmdHis').'.'.$extension;
+            $path = $request->file('attachment')->move('attachment', $newFilename);
 
             Corporation::create([
                 'name' => $request->name,

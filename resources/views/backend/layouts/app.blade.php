@@ -189,15 +189,22 @@
                                         Mark as read
                                     </a>
                                 </div>
-                            @elseif (($notification->data['type']) == 'approved')
-                                <div class="alert alert-success" role="alert">
+                            @elseif (($notification->data['type']) == 'rejected')
+                                <div class="alert alert-danger" role="alert">
                                     [{{ $notification->created_at }}] {{ $notification->data['message'] }} ({{ $notification->data['name'] }}).
                                     <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
                                         Mark as read
                                     </a>
                                 </div>
-                            @elseif (($notification->data['type']) == 'rejected')
-                                <div class="alert alert-danger" role="alert">
+                            @elseif (($notification->data['type']) == 'inprogress')
+                                <div class="alert alert-info" role="alert">
+                                    [{{ $notification->created_at }}] {{ $notification->data['message'] }} ({{ $notification->data['name'] }}).
+                                    <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
+                                        Mark as read
+                                    </a>
+                                </div>
+                            @elseif (($notification->data['type']) == 'approved')
+                                <div class="alert alert-success" role="alert">
                                     [{{ $notification->created_at }}] {{ $notification->data['message'] }} ({{ $notification->data['name'] }}).
                                     <a href="#" class="float-right mark-as-read" data-id="{{ $notification->id }}">
                                         Mark as read
