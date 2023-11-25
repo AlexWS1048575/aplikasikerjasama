@@ -18,8 +18,14 @@
                         </div>
                         <div class="form-group">
                             <strong>Permission <span class="text-danger">*</span></strong>
-                            <br/>
+                            <div>
+                                <label>
+                                    <input type="checkbox" id="selectAllPermissions" onclick="checkAll()">
+                                    Select All
+                                </label>
+                            </div>
                             @foreach($permission as $value)
+                                &nbsp;
                                 <label>{{ Form::checkbox('permission[]', $value->id, in_array($value->id, $rolePermissions) ? true : false, array('class' => 'name')) }}
                                 {{ $value->name }}</label>
                             <br/>
@@ -37,3 +43,20 @@
         </div>
     </form>
 @stop
+<script>
+    function checkAll() {
+        // Get the "Select All" checkbox element
+        var selectAllCheckbox = document.getElementById('selectAllPermissions');
+
+        // Get all permission checkboxes
+        var permissionCheckboxes = document.querySelectorAll('.name');
+
+        // Determine whether to check or uncheck based on the "Select All" checkbox's state
+        var isChecked = selectAllCheckbox.checked;
+        
+        // Update the state of individual permission checkboxes
+        permissionCheckboxes.forEach(function(checkbox) {
+            checkbox.checked = isChecked;
+        });
+    }
+</script>
