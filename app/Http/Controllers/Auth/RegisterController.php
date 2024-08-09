@@ -81,6 +81,7 @@ class RegisterController extends Controller
         ]);
 
         $roles = \Spatie\Permission\Models\Role::pluck('name')->toArray();
+        
         // roles akan terpilih secara otomatis saat registrasi
         if (!$user->hasAnyRole($roles)) {
             $user->assignRole('User');
